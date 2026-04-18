@@ -9,38 +9,185 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppSettingsRouteImport } from './routes/_app.settings'
+import { Route as AppRolesRouteImport } from './routes/_app.roles'
+import { Route as AppReportsRouteImport } from './routes/_app.reports'
+import { Route as AppPipelineRouteImport } from './routes/_app.pipeline'
+import { Route as AppEmailSyncRouteImport } from './routes/_app.email-sync'
+import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppContactsRouteImport } from './routes/_app.contacts'
+import { Route as AppCompaniesRouteImport } from './routes/_app.companies'
+import { Route as AppAiWriterRouteImport } from './routes/_app.ai-writer'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRolesRoute = AppRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPipelineRoute = AppPipelineRouteImport.update({
+  id: '/pipeline',
+  path: '/pipeline',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmailSyncRoute = AppEmailSyncRouteImport.update({
+  id: '/email-sync',
+  path: '/email-sync',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContactsRoute = AppContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCompaniesRoute = AppCompaniesRouteImport.update({
+  id: '/companies',
+  path: '/companies',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAiWriterRoute = AppAiWriterRouteImport.update({
+  id: '/ai-writer',
+  path: '/ai-writer',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/ai-writer': typeof AppAiWriterRoute
+  '/companies': typeof AppCompaniesRoute
+  '/contacts': typeof AppContactsRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/email-sync': typeof AppEmailSyncRoute
+  '/pipeline': typeof AppPipelineRoute
+  '/reports': typeof AppReportsRoute
+  '/roles': typeof AppRolesRoute
+  '/settings': typeof AppSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/ai-writer': typeof AppAiWriterRoute
+  '/companies': typeof AppCompaniesRoute
+  '/contacts': typeof AppContactsRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/email-sync': typeof AppEmailSyncRoute
+  '/pipeline': typeof AppPipelineRoute
+  '/reports': typeof AppReportsRoute
+  '/roles': typeof AppRolesRoute
+  '/settings': typeof AppSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_app/ai-writer': typeof AppAiWriterRoute
+  '/_app/companies': typeof AppCompaniesRoute
+  '/_app/contacts': typeof AppContactsRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/email-sync': typeof AppEmailSyncRoute
+  '/_app/pipeline': typeof AppPipelineRoute
+  '/_app/reports': typeof AppReportsRoute
+  '/_app/roles': typeof AppRolesRoute
+  '/_app/settings': typeof AppSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/ai-writer'
+    | '/companies'
+    | '/contacts'
+    | '/dashboard'
+    | '/email-sync'
+    | '/pipeline'
+    | '/reports'
+    | '/roles'
+    | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/ai-writer'
+    | '/companies'
+    | '/contacts'
+    | '/dashboard'
+    | '/email-sync'
+    | '/pipeline'
+    | '/reports'
+    | '/roles'
+    | '/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/login'
+    | '/_app/ai-writer'
+    | '/_app/companies'
+    | '/_app/contacts'
+    | '/_app/dashboard'
+    | '/_app/email-sync'
+    | '/_app/pipeline'
+    | '/_app/reports'
+    | '/_app/roles'
+    | '/_app/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +195,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/roles': {
+      id: '/_app/roles'
+      path: '/roles'
+      fullPath: '/roles'
+      preLoaderRoute: typeof AppRolesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports': {
+      id: '/_app/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/pipeline': {
+      id: '/_app/pipeline'
+      path: '/pipeline'
+      fullPath: '/pipeline'
+      preLoaderRoute: typeof AppPipelineRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/email-sync': {
+      id: '/_app/email-sync'
+      path: '/email-sync'
+      fullPath: '/email-sync'
+      preLoaderRoute: typeof AppEmailSyncRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/contacts': {
+      id: '/_app/contacts'
+      path: '/contacts'
+      fullPath: '/contacts'
+      preLoaderRoute: typeof AppContactsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/companies': {
+      id: '/_app/companies'
+      path: '/companies'
+      fullPath: '/companies'
+      preLoaderRoute: typeof AppCompaniesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/ai-writer': {
+      id: '/_app/ai-writer'
+      path: '/ai-writer'
+      fullPath: '/ai-writer'
+      preLoaderRoute: typeof AppAiWriterRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppAiWriterRoute: typeof AppAiWriterRoute
+  AppCompaniesRoute: typeof AppCompaniesRoute
+  AppContactsRoute: typeof AppContactsRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppEmailSyncRoute: typeof AppEmailSyncRoute
+  AppPipelineRoute: typeof AppPipelineRoute
+  AppReportsRoute: typeof AppReportsRoute
+  AppRolesRoute: typeof AppRolesRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAiWriterRoute: AppAiWriterRoute,
+  AppCompaniesRoute: AppCompaniesRoute,
+  AppContactsRoute: AppContactsRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppEmailSyncRoute: AppEmailSyncRoute,
+  AppPipelineRoute: AppPipelineRoute,
+  AppReportsRoute: AppReportsRoute,
+  AppRolesRoute: AppRolesRoute,
+  AppSettingsRoute: AppSettingsRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

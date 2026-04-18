@@ -1,0 +1,4 @@
+project_id = "jozynbjtesdmhigethuz"
+
+[functions.ai-email-writer]
+verify_jwt = true
