@@ -159,14 +159,14 @@ function Dashboard() {
           {metrics.data?.sources && metrics.data.sources.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={metrics.data.sources}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2dfd6" vertical={false} />
-                <XAxis dataKey="name" tick={{ fill: "#6b6a66", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#6b6a66", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3d9c4" vertical={false} />
+                <XAxis dataKey="name" tick={{ fill: "#8a6a55", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#8a6a55", fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  cursor={{ fill: "#f8f6ef" }}
-                  contentStyle={{ background: "#fff", border: "1px solid #e2dfd6", borderRadius: 8, fontSize: 12 }}
+                  cursor={{ fill: "#fff3e6" }}
+                  contentStyle={{ background: "#fff", border: "1px solid #f3d9c4", borderRadius: 8, fontSize: 12 }}
                 />
-                <Bar dataKey="value" fill="#444441" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="value" fill="#e2725b" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
