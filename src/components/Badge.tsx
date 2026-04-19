@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 export function TempBadge({ temp }: { temp: "hot" | "warm" | "cold" | null | undefined }) {
   const t = temp ?? "warm";
   const styles: Record<string, { bg: string; fg: string; label: string }> = {
-    hot: { bg: "#444441", fg: "#ffffff", label: "Hot" },
-    warm: { bg: "#d4537e", fg: "#2a2a28", label: "Warm" },
-    cold: { bg: "#ede9df", fg: "#2a2a28", label: "Cold" },
+    hot: { bg: "#e2725b", fg: "#ffffff", label: "Hot" },
+    warm: { bg: "#f5b7a3", fg: "#3a2418", label: "Warm" },
+    cold: { bg: "#fdeede", fg: "#3a2418", label: "Cold" },
   };
   const s = styles[t]!;
   return (
@@ -21,8 +21,8 @@ export function TempBadge({ temp }: { temp: "hot" | "warm" | "cold" | null | und
 export function Pill({ children, tone = "muted" }: { children: ReactNode; tone?: "muted" | "primary" }) {
   const styles =
     tone === "primary"
-      ? { background: "#f8f6ef", color: "#444441" }
-      : { background: "#f8f6ef", color: "#6b6a66" };
+      ? { background: "#fff3e6", color: "#e2725b" }
+      : { background: "#fff3e6", color: "#8a6a55" };
   return (
     <span className="inline-flex items-center px-2.5 py-0.5 text-xs rounded-full" style={{ ...styles, fontWeight: 500 }}>
       {children}

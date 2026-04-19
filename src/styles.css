@@ -46,51 +46,51 @@
 }
 
 :root {
-  /* Brand: Warm Neutral (Schema 04) — steel + dusty rose */
-  --background: #f1efe8;            /* page bg (surface) */
-  --foreground: #2a2a28;            /* primary text */
-  --card: #ffffff;                  /* card surface */
-  --card-foreground: #2a2a28;
+  /* Brand: Warm & Friendly — terracotta + cream + peach */
+  --background: #fff6ec;            /* warm cream page bg */
+  --foreground: #3a2418;            /* cocoa text */
+  --card: #ffffff;
+  --card-foreground: #3a2418;
   --popover: #ffffff;
-  --popover-foreground: #2a2a28;
+  --popover-foreground: #3a2418;
 
-  --primary: #444441;               /* steel — buttons, active */
+  --primary: #e2725b;               /* terracotta — buttons, active */
   --primary-foreground: #ffffff;
-  --primary-hover: #5f5e5a;
+  --primary-hover: #c95c47;
 
-  --secondary: #d4537e;              /* dusty rose — accents */
-  --secondary-foreground: #ffffff;
+  --secondary: #f5b7a3;              /* warm peach — accents */
+  --secondary-foreground: #3a2418;
 
-  --muted: #f1efe8;
-  --muted-foreground: #6b6a66;
+  --muted: #fdeede;
+  --muted-foreground: #8a6a55;
 
-  --accent: #f4c0d1;
-  --accent-foreground: #72243e;
+  --accent: #ffd9c0;
+  --accent-foreground: #8a3a1e;
 
-  --destructive: #b94a52;
+  --destructive: #c0392b;
   --destructive-foreground: #ffffff;
 
-  --border: #e2dfd6;
-  --input: #e2dfd6;
-  --input-bg: #f8f6ef;
-  --ring: #d4537e;
+  --border: #f3d9c4;
+  --input: #f3d9c4;
+  --input-bg: #fff3e6;
+  --ring: #e2725b;
 
-  --sidebar: #ffffff;
-  --sidebar-foreground: #2a2a28;
-  --sidebar-active-bg: #f1efe8;
-  --sidebar-active-fg: #444441;
+  --sidebar: #fffaf2;
+  --sidebar-foreground: #3a2418;
+  --sidebar-active-bg: #ffe4d1;
+  --sidebar-active-fg: #c95c47;
 
-  --hot: #d4537e;
-  --warm: #f4c0d1;
-  --cold: #c8c6bf;
+  --hot: #e2725b;
+  --warm: #f5b7a3;
+  --cold: #a8c5b5;
 
-  --search-bg: #f8f6ef;
+  --search-bg: #fff3e6;
 }
 
 .dark {
   /* No dark mode — keep parity */
-  --background: #f1efe8;
-  --foreground: #2a2a28;
+  --background: #fff6ec;
+  --foreground: #3a2418;
 }
 
 @layer base {
@@ -116,7 +116,7 @@
   100% { background-position: 400px 0; }
 }
 .crm-skeleton {
-  background: linear-gradient(90deg, #f1efe8 0%, #e2dfd6 50%, #f1efe8 100%);
+  background: linear-gradient(90deg, #fff6ec 0%, #ffe4d1 50%, #fff6ec 100%);
   background-size: 800px 100%;
   animation: crm-shimmer 1.6s linear infinite;
   border-radius: 8px;

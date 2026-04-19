@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_app/reports")({
   component: ReportsPage,
 });
 
-const COLORS = ["#444441", "#d4537e", "#e2dfd6", "#f8f6ef", "#6b6a66", "#c8c6bf"];
+const COLORS = ["#e2725b", "#f5b7a3", "#f3d9c4", "#fff3e6", "#8a6a55", "#a8c5b5"];
 
 function ReportsPage() {
   const data = useQuery({
@@ -71,11 +71,11 @@ function ReportsPage() {
           {(data.data?.byStage ?? []).length > 0 ? (
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={data.data?.byStage}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2dfd6" vertical={false} />
-                <XAxis dataKey="name" tick={{ fill: "#6b6a66", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#6b6a66", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: "#f8f6ef" }} contentStyle={{ background: "#fff", border: "1px solid #e2dfd6", borderRadius: 8, fontSize: 12 }} />
-                <Bar dataKey="value" fill="#444441" radius={[6, 6, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3d9c4" vertical={false} />
+                <XAxis dataKey="name" tick={{ fill: "#8a6a55", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#8a6a55", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: "#fff3e6" }} contentStyle={{ background: "#fff", border: "1px solid #f3d9c4", borderRadius: 8, fontSize: 12 }} />
+                <Bar dataKey="value" fill="#e2725b" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : <Empty />}
@@ -87,8 +87,8 @@ function ReportsPage() {
                 <Pie data={data.data?.bySource} dataKey="value" nameKey="name" innerRadius={60} outerRadius={90} paddingAngle={2}>
                   {data.data?.bySource.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Pie>
-                <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e2dfd6", borderRadius: 8, fontSize: 12 }} />
-                <Legend wrapperStyle={{ fontSize: 11, color: "#6b6a66" }} />
+                <Tooltip contentStyle={{ background: "#fff", border: "1px solid #f3d9c4", borderRadius: 8, fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 11, color: "#8a6a55" }} />
               </PieChart>
             </ResponsiveContainer>
           ) : <Empty />}
@@ -97,11 +97,11 @@ function ReportsPage() {
           {(data.data?.byTemp ?? []).some((t) => t.value > 0) ? (
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={data.data?.byTemp} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2dfd6" horizontal={false} />
-                <XAxis type="number" tick={{ fill: "#6b6a66", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis dataKey="name" type="category" tick={{ fill: "#6b6a66", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: "#f8f6ef" }} contentStyle={{ background: "#fff", border: "1px solid #e2dfd6", borderRadius: 8, fontSize: 12 }} />
-                <Bar dataKey="value" fill="#d4537e" radius={[0, 6, 6, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3d9c4" horizontal={false} />
+                <XAxis type="number" tick={{ fill: "#8a6a55", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis dataKey="name" type="category" tick={{ fill: "#8a6a55", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: "#fff3e6" }} contentStyle={{ background: "#fff", border: "1px solid #f3d9c4", borderRadius: 8, fontSize: 12 }} />
+                <Bar dataKey="value" fill="#f5b7a3" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : <Empty />}

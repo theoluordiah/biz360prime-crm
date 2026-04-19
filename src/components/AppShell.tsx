@@ -45,7 +45,7 @@ export function AppShell() {
       {/* Sidebar (desktop) */}
       <aside className="hidden md:flex w-[200px] shrink-0 flex-col border-r border-border bg-sidebar">
         <div className="px-5 py-6">
-          <Link to="/dashboard" className="text-xl tracking-tight" style={{ color: "#444441", fontWeight: 500 }}>
+          <Link to="/dashboard" className="text-xl tracking-tight" style={{ color: "#e2725b", fontWeight: 500 }}>
             CRM360
           </Link>
         </div>
@@ -108,7 +108,7 @@ export function AppShell() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <header className="flex items-center gap-3 border-b border-border bg-card px-4 md:px-8 py-3">
-          <div className="md:hidden text-lg" style={{ color: "#444441", fontWeight: 500 }}>
+          <div className="md:hidden text-lg" style={{ color: "#e2725b", fontWeight: 500 }}>
             CRM360
           </div>
           <div className="flex-1 max-w-md">
