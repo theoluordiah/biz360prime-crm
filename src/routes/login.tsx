@@ -96,7 +96,10 @@ function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={5}
+                maxLength={5}
+                pattern="\d{5}"
+                title="Password must be exactly 5 digits"
                 className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30"
               />
             </div>
