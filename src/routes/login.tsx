@@ -55,7 +55,7 @@ function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="text-3xl tracking-tight" style={{ color: "#c86b85", fontWeight: 500 }}>
+          <Link to="/" className="text-3xl tracking-tight" style={{ color: "#444441", fontWeight: 500 }}>
             CRM360
           </Link>
           <p className="mt-2 text-sm text-muted-foreground">

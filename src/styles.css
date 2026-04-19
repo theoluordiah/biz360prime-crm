@@ -46,51 +46,51 @@
 }
 
 :root {
-  /* Brand: soft blush palette */
-  --background: #f8e8ee;            /* page bg */
-  --foreground: #4a2535;            /* primary text */
+  /* Brand: Warm Neutral (Schema 04) — steel + dusty rose */
+  --background: #f1efe8;            /* page bg (surface) */
+  --foreground: #2a2a28;            /* primary text */
   --card: #ffffff;                  /* card surface */
-  --card-foreground: #4a2535;
+  --card-foreground: #2a2a28;
   --popover: #ffffff;
-  --popover-foreground: #4a2535;
+  --popover-foreground: #2a2a28;
 
-  --primary: #c86b85;               /* buttons, active */
+  --primary: #444441;               /* steel — buttons, active */
   --primary-foreground: #ffffff;
-  --primary-hover: #b85d77;
+  --primary-hover: #5f5e5a;
 
-  --secondary: #e6a4b4;              /* nav accents, headers */
-  --secondary-foreground: #4a2535;
+  --secondary: #d4537e;              /* dusty rose — accents */
+  --secondary-foreground: #ffffff;
 
-  --muted: #fdf3f7;
-  --muted-foreground: #9a6070;
+  --muted: #f1efe8;
+  --muted-foreground: #6b6a66;
 
-  --accent: #f8e8ee;
-  --accent-foreground: #c86b85;
+  --accent: #f4c0d1;
+  --accent-foreground: #72243e;
 
   --destructive: #b94a52;
   --destructive-foreground: #ffffff;
 
-  --border: #eacdd6;
-  --input: #eacdd6;
-  --input-bg: #fdf3f7;
-  --ring: #e6a4b4;
+  --border: #e2dfd6;
+  --input: #e2dfd6;
+  --input-bg: #f8f6ef;
+  --ring: #d4537e;
 
   --sidebar: #ffffff;
-  --sidebar-foreground: #4a2535;
-  --sidebar-active-bg: #f8e8ee;
-  --sidebar-active-fg: #c86b85;
+  --sidebar-foreground: #2a2a28;
+  --sidebar-active-bg: #f1efe8;
+  --sidebar-active-fg: #444441;
 
-  --hot: #c86b85;
-  --warm: #e6a4b4;
-  --cold: #b8c5d6;
+  --hot: #d4537e;
+  --warm: #f4c0d1;
+  --cold: #c8c6bf;
 
-  --search-bg: #fdf3f7;
+  --search-bg: #f8f6ef;
 }
 
 .dark {
-  /* No dark mode for CRM360 — keep parity */
-  --background: #f8e8ee;
-  --foreground: #4a2535;
+  /* No dark mode — keep parity */
+  --background: #f1efe8;
+  --foreground: #2a2a28;
 }
 
 @layer base {
@@ -116,7 +116,7 @@
   100% { background-position: 400px 0; }
 }
 .crm-skeleton {
-  background: linear-gradient(90deg, #f8e8ee 0%, #f0d4de 50%, #f8e8ee 100%);
+  background: linear-gradient(90deg, #f1efe8 0%, #e2dfd6 50%, #f1efe8 100%);
   background-size: 800px 100%;
   animation: crm-shimmer 1.6s linear infinite;
   border-radius: 8px;
