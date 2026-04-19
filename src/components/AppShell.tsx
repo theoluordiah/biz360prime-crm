@@ -151,9 +151,11 @@ export function AppShell() {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg ${
-                  active ? "text-primary" : "text-muted-foreground"
-                }`}
+                className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: active ? item.bg : "transparent",
+                  color: active ? item.fg : "var(--color-muted-foreground)",
+                }}
               >
                 <Icon className="h-5 w-5" />
                 <span className="text-[10px]">{item.label}</span>
