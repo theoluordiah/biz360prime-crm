@@ -16,20 +16,57 @@ import { useAuth } from "@/lib/auth-context";
 import { initials } from "@/lib/format";
 import { useState } from "react";
 
+// Each module gets its own warm hue (bg + fg) used on hover and when active
 const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/contacts", label: "Contacts", icon: Users },
-  { to: "/companies", label: "Companies", icon: Building2 },
-  { to: "/pipeline", label: "Pipeline", icon: KanbanSquare },
-  { to: "/email-sync", label: "Email Sync", icon: Mail },
-  { to: "/ai-writer", label: "AI Writer", icon: Sparkles },
-  { to: "/reports", label: "Reports", icon: BarChart3 },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, bg: "#ffe4d1", fg: "#c95c47" }, // peach
+  { to: "/contacts", label: "Contacts", icon: Users, bg: "#fde2c0", fg: "#a8631c" }, // amber
+  { to: "/companies", label: "Companies", icon: Building2, bg: "#fce5d8", fg: "#b04a2a" }, // terracotta
+  { to: "/pipeline", label: "Pipeline", icon: KanbanSquare, bg: "#fde0e0", fg: "#b8413f" }, // coral red
+  { to: "/email-sync", label: "Email Sync", icon: Mail, bg: "#fff0c8", fg: "#9a6a14" }, // honey
+  { to: "/ai-writer", label: "AI Writer", icon: Sparkles, bg: "#f5e3d0", fg: "#8a5a2a" }, // caramel
+  { to: "/reports", label: "Reports", icon: BarChart3, bg: "#e0ecdc", fg: "#4f7a4a" }, // sage
 ] as const;
 
 const ADMIN_NAV = [
-  { to: "/roles", label: "Roles & Access", icon: Shield },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/roles", label: "Roles & Access", icon: Shield, bg: "#e7e0d2", fg: "#6b5a3e" }, // sand
+  { to: "/settings", label: "Settings", icon: Settings, bg: "#ece4d8", fg: "#6a553c" }, // taupe
 ] as const;
+
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  bg: string;
+  fg: string;
+};
+
+function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+  const Icon = item.icon;
+  const [hover, setHover] = useState(false);
+  const tinted = active || hover;
+  return (
+    <Link
+      to={item.to}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
+      style={{
+        backgroundColor: tinted ? item.bg : "transparent",
+        color: tinted ? item.fg : "var(--color-foreground)",
+      }}
+    >
+      {active ? (
+        <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: item.fg }} />
+      ) : (
+        <Icon
+          className="h-4 w-4"
+          style={{ color: tinted ? item.fg : "var(--color-muted-foreground)" }}
+        />
+      )}
+      <span>{item.label}</span>
+    </Link>
+  );
+}
 
 export function AppShell() {
   const location = useLocation();
@@ -50,45 +87,13 @@ export function AppShell() {
           </Link>
         </div>
         <nav className="flex-1 px-3 space-y-1">
-          {NAV.map((item) => {
-            const active = isActive(item.to);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                  active
-                    ? "bg-sidebar-active-bg text-sidebar-active-fg"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                {active && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
-                {!active && <Icon className="h-4 w-4 text-muted-foreground" />}
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          {NAV.map((item) => (
+            <NavLink key={item.to} item={item} active={isActive(item.to)} />
+          ))}
           <div className="my-3 border-t border-border" />
-          {ADMIN_NAV.map((item) => {
-            const active = isActive(item.to);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                  active
-                    ? "bg-sidebar-active-bg text-sidebar-active-fg"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                {active && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
-                {!active && <Icon className="h-4 w-4 text-muted-foreground" />}
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          {ADMIN_NAV.map((item) => (
+            <NavLink key={item.to} item={item} active={isActive(item.to)} />
+          ))}
         </nav>
         <div className="px-3 py-4">
           <button
