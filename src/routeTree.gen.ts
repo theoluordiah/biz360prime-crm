@@ -24,6 +24,7 @@ import { Route as AppDocumentsRouteImport } from './routes/_app.documents'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppContactsRouteImport } from './routes/_app.contacts'
 import { Route as AppCompaniesRouteImport } from './routes/_app.companies'
+import { Route as AppAnalyticsRouteImport } from './routes/_app.analytics'
 import { Route as AppAiWriterRouteImport } from './routes/_app.ai-writer'
 
 const LoginRoute = LoginRouteImport.update({
@@ -100,6 +101,11 @@ const AppCompaniesRoute = AppCompaniesRouteImport.update({
   path: '/companies',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAiWriterRoute = AppAiWriterRouteImport.update({
   id: '/ai-writer',
   path: '/ai-writer',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/ai-writer': typeof AppAiWriterRoute
+  '/analytics': typeof AppAnalyticsRoute
   '/companies': typeof AppCompaniesRoute
   '/contacts': typeof AppContactsRoute
   '/dashboard': typeof AppDashboardRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/ai-writer': typeof AppAiWriterRoute
+  '/analytics': typeof AppAnalyticsRoute
   '/companies': typeof AppCompaniesRoute
   '/contacts': typeof AppContactsRoute
   '/dashboard': typeof AppDashboardRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/_app/ai-writer': typeof AppAiWriterRoute
+  '/_app/analytics': typeof AppAnalyticsRoute
   '/_app/companies': typeof AppCompaniesRoute
   '/_app/contacts': typeof AppContactsRoute
   '/_app/dashboard': typeof AppDashboardRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/ai-writer'
+    | '/analytics'
     | '/companies'
     | '/contacts'
     | '/dashboard'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/ai-writer'
+    | '/analytics'
     | '/companies'
     | '/contacts'
     | '/dashboard'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/login'
     | '/_app/ai-writer'
+    | '/_app/analytics'
     | '/_app/companies'
     | '/_app/contacts'
     | '/_app/dashboard'
@@ -327,6 +339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCompaniesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/analytics': {
+      id: '/_app/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AppAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/ai-writer': {
       id: '/_app/ai-writer'
       path: '/ai-writer'
@@ -339,6 +358,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAiWriterRoute: typeof AppAiWriterRoute
+  AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppCompaniesRoute: typeof AppCompaniesRoute
   AppContactsRoute: typeof AppContactsRoute
   AppDashboardRoute: typeof AppDashboardRoute
@@ -355,6 +375,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAiWriterRoute: AppAiWriterRoute,
+  AppAnalyticsRoute: AppAnalyticsRoute,
   AppCompaniesRoute: AppCompaniesRoute,
   AppContactsRoute: AppContactsRoute,
   AppDashboardRoute: AppDashboardRoute,
