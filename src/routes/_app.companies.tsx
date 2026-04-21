@@ -75,9 +75,14 @@ function CompaniesPage() {
           <p className="text-sm text-muted-foreground mt-1">{companies.data?.length ?? 0} total</p>
         </div>
         {canEdit(role) && (
-          <button onClick={() => setOpenAdd(true)} className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
-            <Plus className="h-4 w-4" /> Add company
-          </button>
+          <div className="flex gap-2">
+            <button onClick={() => setOpenImport(true)} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted" style={{ fontWeight: 500 }}>
+              <Upload className="h-4 w-4" /> Import
+            </button>
+            <button onClick={() => setOpenAdd(true)} className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
+              <Plus className="h-4 w-4" /> Add company
+            </button>
+          </div>
         )}
       </div>
 
