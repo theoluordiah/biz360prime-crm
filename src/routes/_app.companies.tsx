@@ -31,6 +31,7 @@ function CompaniesPage() {
   const { user, role } = useAuth();
   const qc = useQueryClient();
   const [openAdd, setOpenAdd] = useState(false);
+  const [openImport, setOpenImport] = useState(false);
 
   const companies = useQuery({
     queryKey: ["companies-full"],
