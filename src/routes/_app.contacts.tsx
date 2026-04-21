@@ -5,8 +5,33 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth, canEdit } from "@/lib/auth-context";
 import { initials, timeAgo } from "@/lib/format";
 import { TempBadge, Pill } from "@/components/Badge";
-import { Plus, X, Search } from "lucide-react";
+import { Plus, X, Search, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { ImportDialog, type ImportConfig } from "@/components/ImportDialog";
+
+const CONTACTS_IMPORT: ImportConfig = {
+  entity: "contacts",
+  title: "Import contacts",
+  fields: [
+    { key: "first_name", label: "First name", required: true, transform: (v) => String(v ?? "").trim() },
+    { key: "last_name", label: "Last name", required: true, transform: (v) => String(v ?? "").trim() },
+    { key: "email", label: "Email", transform: (v) => String(v ?? "").trim() || null },
+    { key: "phone", label: "Phone", transform: (v) => String(v ?? "").trim() || null },
+    { key: "role_title", label: "Role / Title", transform: (v) => String(v ?? "").trim() || null },
+    {
+      key: "temperature",
+      label: "Temperature (hot/warm/cold)",
+      transform: (v) => {
+        const s = String(v ?? "").trim().toLowerCase();
+        return s === "hot" || s === "warm" || s === "cold" ? s : "warm";
+      },
+    },
+  ],
+  sampleRows: [
+    { first_name: "Jane", last_name: "Doe", email: "jane@acme.com", phone: "+15551234", role_title: "CEO", temperature: "hot" },
+    { first_name: "John", last_name: "Smith", email: "john@globex.com", phone: "", role_title: "VP Sales", temperature: "warm" },
+  ],
+};
 
 export const Route = createFileRoute("/_app/contacts")({
   component: ContactsPage,
