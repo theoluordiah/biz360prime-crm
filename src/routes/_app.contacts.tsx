@@ -43,6 +43,7 @@ function ContactsPage() {
   const [search, setSearch] = useState("");
   const [tempFilter, setTempFilter] = useState<"all" | "hot" | "warm" | "cold">("all");
   const [openAdd, setOpenAdd] = useState(false);
+  const [openImport, setOpenImport] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const contacts = useQuery({
