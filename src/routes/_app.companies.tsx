@@ -138,6 +138,14 @@ function CompaniesPage() {
           </div>
         </div>
       )}
+
+      {openImport && (
+        <ImportDialog
+          config={COMPANIES_IMPORT}
+          onClose={() => setOpenImport(false)}
+          onImported={() => qc.invalidateQueries({ queryKey: ["companies-full"] })}
+        />
+      )}
     </div>
   );
 }
