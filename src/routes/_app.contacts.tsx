@@ -237,6 +237,14 @@ function ContactsPage() {
           <ContactDetail contact={selected} onClose={() => setSelectedId(null)} />
         </div>
       )}
+
+      {openImport && (
+        <ImportDialog
+          config={CONTACTS_IMPORT}
+          onClose={() => setOpenImport(false)}
+          onImported={() => qc.invalidateQueries({ queryKey: ["contacts"] })}
+        />
+      )}
     </div>
   );
 }
