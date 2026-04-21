@@ -33,6 +33,7 @@ const NAV = [
   { to: "/documents", label: "Documents", icon: FileText, bg: "#f0e6d2", fg: "#7a5e2a" }, // parchment
   { to: "/email-sync", label: "Email Sync", icon: Mail, bg: "#fff0c8", fg: "#9a6a14" }, // honey
   { to: "/ai-writer", label: "AI Writer", icon: Sparkles, bg: "#f5e3d0", fg: "#8a5a2a" }, // caramel
+  { to: "/analytics", label: "Analytics", icon: BarChart3, bg: "#dceadf", fg: "#3f6a52" }, // mint
   { to: "/reports", label: "Reports", icon: BarChart3, bg: "#e0ecdc", fg: "#4f7a4a" }, // sage
 ] as const;
 
