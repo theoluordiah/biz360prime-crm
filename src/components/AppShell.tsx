@@ -11,17 +11,26 @@ import {
   Settings,
   Search,
   LogOut,
+  CalendarCheck,
+  UserPlus,
+  Inbox,
+  FileText,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { initials } from "@/lib/format";
 import { useState } from "react";
+import { NotificationsBell } from "@/components/NotificationsBell";
 
 // Each module gets its own warm hue (bg + fg) used on hover and when active
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, bg: "#ffe4d1", fg: "#c95c47" }, // peach
-  { to: "/contacts", label: "Contacts", icon: Users, bg: "#fde2c0", fg: "#a8631c" }, // amber
-  { to: "/companies", label: "Companies", icon: Building2, bg: "#fce5d8", fg: "#b04a2a" }, // terracotta
+  { to: "/leads", label: "Leads", icon: UserPlus, bg: "#fde2c0", fg: "#a8631c" }, // amber
+  { to: "/contacts", label: "Contacts", icon: Users, bg: "#fce5d8", fg: "#b04a2a" }, // terracotta
+  { to: "/companies", label: "Companies", icon: Building2, bg: "#fde7d4", fg: "#a85a2c" }, // pumpkin
   { to: "/pipeline", label: "Pipeline", icon: KanbanSquare, bg: "#fde0e0", fg: "#b8413f" }, // coral red
+  { to: "/tasks", label: "Tasks & Calendar", icon: CalendarCheck, bg: "#e6e2f0", fg: "#5a4f8a" }, // lavender
+  { to: "/inbox", label: "Inbox", icon: Inbox, bg: "#dce9f0", fg: "#3a6680" }, // sky
+  { to: "/documents", label: "Documents", icon: FileText, bg: "#f0e6d2", fg: "#7a5e2a" }, // parchment
   { to: "/email-sync", label: "Email Sync", icon: Mail, bg: "#fff0c8", fg: "#9a6a14" }, // honey
   { to: "/ai-writer", label: "AI Writer", icon: Sparkles, bg: "#f5e3d0", fg: "#8a5a2a" }, // caramel
   { to: "/reports", label: "Reports", icon: BarChart3, bg: "#e0ecdc", fg: "#4f7a4a" }, // sage
@@ -128,6 +137,7 @@ export function AppShell() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <NotificationsBell />
             <div className="hidden sm:block text-right">
               <div className="text-sm" style={{ fontWeight: 500 }}>{profile?.display_name ?? "—"}</div>
               <div className="text-xs text-muted-foreground">{profile?.email}</div>
