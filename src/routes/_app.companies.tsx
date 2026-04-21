@@ -4,8 +4,24 @@ import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, canEdit } from "@/lib/auth-context";
 import { formatCurrency } from "@/lib/format";
-import { Plus, X, Building2 } from "lucide-react";
+import { Plus, X, Building2, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { ImportDialog, type ImportConfig } from "@/components/ImportDialog";
+
+const COMPANIES_IMPORT: ImportConfig = {
+  entity: "companies",
+  title: "Import companies",
+  fields: [
+    { key: "name", label: "Company name", required: true, transform: (v) => String(v ?? "").trim() },
+    { key: "industry", label: "Industry", transform: (v) => String(v ?? "").trim() || null },
+    { key: "website", label: "Website", transform: (v) => String(v ?? "").trim() || null },
+    { key: "notes", label: "Notes", transform: (v) => String(v ?? "").trim() || null },
+  ],
+  sampleRows: [
+    { name: "Acme Inc", industry: "Software", website: "https://acme.com", notes: "Key account" },
+    { name: "Globex", industry: "Manufacturing", website: "https://globex.com", notes: "" },
+  ],
+};
 
 export const Route = createFileRoute("/_app/companies")({
   component: CompaniesPage,
