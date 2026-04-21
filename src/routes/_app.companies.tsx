@@ -4,8 +4,24 @@ import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, canEdit } from "@/lib/auth-context";
 import { formatCurrency } from "@/lib/format";
-import { Plus, X, Building2 } from "lucide-react";
+import { Plus, X, Building2, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { ImportDialog, type ImportConfig } from "@/components/ImportDialog";
+
+const COMPANIES_IMPORT: ImportConfig = {
+  entity: "companies",
+  title: "Import companies",
+  fields: [
+    { key: "name", label: "Company name", required: true, transform: (v) => String(v ?? "").trim() },
+    { key: "industry", label: "Industry", transform: (v) => String(v ?? "").trim() || null },
+    { key: "website", label: "Website", transform: (v) => String(v ?? "").trim() || null },
+    { key: "notes", label: "Notes", transform: (v) => String(v ?? "").trim() || null },
+  ],
+  sampleRows: [
+    { name: "Acme Inc", industry: "Software", website: "https://acme.com", notes: "Key account" },
+    { name: "Globex", industry: "Manufacturing", website: "https://globex.com", notes: "" },
+  ],
+};
 
 export const Route = createFileRoute("/_app/companies")({
   component: CompaniesPage,
@@ -15,6 +31,7 @@ function CompaniesPage() {
   const { user, role } = useAuth();
   const qc = useQueryClient();
   const [openAdd, setOpenAdd] = useState(false);
+  const [openImport, setOpenImport] = useState(false);
 
   const companies = useQuery({
     queryKey: ["companies-full"],
@@ -58,9 +75,14 @@ function CompaniesPage() {
           <p className="text-sm text-muted-foreground mt-1">{companies.data?.length ?? 0} total</p>
         </div>
         {canEdit(role) && (
-          <button onClick={() => setOpenAdd(true)} className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
-            <Plus className="h-4 w-4" /> Add company
-          </button>
+          <div className="flex gap-2">
+            <button onClick={() => setOpenImport(true)} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted" style={{ fontWeight: 500 }}>
+              <Upload className="h-4 w-4" /> Import
+            </button>
+            <button onClick={() => setOpenAdd(true)} className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
+              <Plus className="h-4 w-4" /> Add company
+            </button>
+          </div>
         )}
       </div>
 
@@ -115,6 +137,14 @@ function CompaniesPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {openImport && (
+        <ImportDialog
+          config={COMPANIES_IMPORT}
+          onClose={() => setOpenImport(false)}
+          onImported={() => qc.invalidateQueries({ queryKey: ["companies-full"] })}
+        />
       )}
     </div>
   );

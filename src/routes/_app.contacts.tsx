@@ -5,8 +5,33 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth, canEdit } from "@/lib/auth-context";
 import { initials, timeAgo } from "@/lib/format";
 import { TempBadge, Pill } from "@/components/Badge";
-import { Plus, X, Search } from "lucide-react";
+import { Plus, X, Search, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { ImportDialog, type ImportConfig } from "@/components/ImportDialog";
+
+const CONTACTS_IMPORT: ImportConfig = {
+  entity: "contacts",
+  title: "Import contacts",
+  fields: [
+    { key: "first_name", label: "First name", required: true, transform: (v) => String(v ?? "").trim() },
+    { key: "last_name", label: "Last name", required: true, transform: (v) => String(v ?? "").trim() },
+    { key: "email", label: "Email", transform: (v) => String(v ?? "").trim() || null },
+    { key: "phone", label: "Phone", transform: (v) => String(v ?? "").trim() || null },
+    { key: "role_title", label: "Role / Title", transform: (v) => String(v ?? "").trim() || null },
+    {
+      key: "temperature",
+      label: "Temperature (hot/warm/cold)",
+      transform: (v) => {
+        const s = String(v ?? "").trim().toLowerCase();
+        return s === "hot" || s === "warm" || s === "cold" ? s : "warm";
+      },
+    },
+  ],
+  sampleRows: [
+    { first_name: "Jane", last_name: "Doe", email: "jane@acme.com", phone: "+15551234", role_title: "CEO", temperature: "hot" },
+    { first_name: "John", last_name: "Smith", email: "john@globex.com", phone: "", role_title: "VP Sales", temperature: "warm" },
+  ],
+};
 
 export const Route = createFileRoute("/_app/contacts")({
   component: ContactsPage,
@@ -18,6 +43,7 @@ function ContactsPage() {
   const [search, setSearch] = useState("");
   const [tempFilter, setTempFilter] = useState<"all" | "hot" | "warm" | "cold">("all");
   const [openAdd, setOpenAdd] = useState(false);
+  const [openImport, setOpenImport] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const contacts = useQuery({
@@ -76,13 +102,22 @@ function ContactsPage() {
           <p className="text-sm text-muted-foreground mt-1">{contacts.data?.length ?? 0} total</p>
         </div>
         {canEdit(role) && (
-          <button
-            onClick={() => setOpenAdd(true)}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover"
-            style={{ fontWeight: 500 }}
-          >
-            <Plus className="h-4 w-4" /> Add contact
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setOpenImport(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted"
+              style={{ fontWeight: 500 }}
+            >
+              <Upload className="h-4 w-4" /> Import
+            </button>
+            <button
+              onClick={() => setOpenAdd(true)}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover"
+              style={{ fontWeight: 500 }}
+            >
+              <Plus className="h-4 w-4" /> Add contact
+            </button>
+          </div>
         )}
       </div>
 
@@ -201,6 +236,14 @@ function ContactsPage() {
           <div className="flex-1 bg-foreground/20" onClick={() => setSelectedId(null)} />
           <ContactDetail contact={selected} onClose={() => setSelectedId(null)} />
         </div>
+      )}
+
+      {openImport && (
+        <ImportDialog
+          config={CONTACTS_IMPORT}
+          onClose={() => setOpenImport(false)}
+          onImported={() => qc.invalidateQueries({ queryKey: ["contacts"] })}
+        />
       )}
     </div>
   );
