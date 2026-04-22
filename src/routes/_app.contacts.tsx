@@ -290,7 +290,54 @@ function ContactsPage() {
       {selected && (
         <div className="fixed inset-0 z-50 flex">
           <div className="flex-1 bg-foreground/20" onClick={() => setSelectedId(null)} />
-          <ContactDetail contact={selected} onClose={() => setSelectedId(null)} />
+          <ContactDetail
+            contact={selected}
+            onClose={() => setSelectedId(null)}
+            canEditRow={canEdit(role)}
+            canDelete={canDelete}
+            onEdit={() => { setEditing(selected); setSelectedId(null); }}
+            onDelete={() => deleteContact(selected.id)}
+          />
+        </div>
+      )}
+
+      {/* Slide-in edit panel */}
+      {editing && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="flex-1 bg-foreground/20" onClick={() => setEditing(null)} />
+          <div className="w-full max-w-md bg-card h-full overflow-y-auto p-6 border-l border-border">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg text-foreground" style={{ fontWeight: 500 }}>Edit contact</h2>
+              <button onClick={() => setEditing(null)}><X className="h-5 w-5 text-muted-foreground" /></button>
+            </div>
+            <form onSubmit={(e: FormEvent<HTMLFormElement>) => { e.preventDefault(); updateContact(editing.id, new FormData(e.currentTarget)); }} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="First name" name="first_name" required defaultValue={editing.first_name} />
+                <Field label="Last name" name="last_name" required defaultValue={editing.last_name} />
+              </div>
+              <Field label="Email" name="email" type="email" defaultValue={editing.email ?? ""} />
+              <Field label="Phone" name="phone" defaultValue={editing.phone ?? ""} />
+              <Field label="Role / Title" name="role_title" defaultValue={editing.role_title ?? ""} />
+              <div>
+                <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>Company</label>
+                <select name="company_id" defaultValue={editing.company_id ?? ""} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary">
+                  <option value="">— None —</option>
+                  {(companies.data ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>Temperature</label>
+                <select name="temperature" defaultValue={editing.temperature ?? "warm"} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary">
+                  <option value="hot">Hot</option>
+                  <option value="warm">Warm</option>
+                  <option value="cold">Cold</option>
+                </select>
+              </div>
+              <button type="submit" className="w-full rounded-full bg-primary px-4 py-2.5 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
+                Save changes
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
