@@ -5,9 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth, canEdit } from "@/lib/auth-context";
 import { initials, timeAgo } from "@/lib/format";
 import { TempBadge, Pill } from "@/components/Badge";
-import { Plus, X, Search, Upload } from "lucide-react";
+import { Plus, X, Search, Upload, Download, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ImportDialog, type ImportConfig } from "@/components/ImportDialog";
+import { exportToCsv } from "@/lib/csv-export";
 
 const CONTACTS_IMPORT: ImportConfig = {
   entity: "contacts",
