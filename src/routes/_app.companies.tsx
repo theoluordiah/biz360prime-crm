@@ -112,8 +112,25 @@ function CompaniesPage() {
     <div className="space-y-5 max-w-7xl">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl text-foreground" style={{ fontWeight: 500 }}>Companies</h1>
-          <p className="text-sm text-muted-foreground mt-1">{companies.data?.length ?? 0} total</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl text-foreground" style={{ fontWeight: 500 }}>Companies</h1>
+            {role && (
+              <span
+                title={canEdit(role) ? "You can add and edit companies" : "Read-only access"}
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs border ${
+                  canEdit(role)
+                    ? "bg-primary/10 text-primary border-primary/20"
+                    : "bg-muted text-muted-foreground border-border"
+                }`}
+                style={{ fontWeight: 500 }}
+              >
+                {role.replace("_", " ")}
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            {companies.data?.length ?? 0} total · {canEdit(role) ? (canDelete ? "can edit & delete" : "can edit") : "view only"}
+          </p>
         </div>
         <div className="flex gap-2 flex-wrap">
           <button onClick={exportCompanies} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted" style={{ fontWeight: 500 }}>
