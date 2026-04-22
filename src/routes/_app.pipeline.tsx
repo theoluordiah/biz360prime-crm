@@ -146,8 +146,28 @@ function PipelinePage() {
           {(stages.data ?? []).map((s: any) => {
             const stageDeals = dealsByStage[s.id] ?? [];
             const total = stageDeals.reduce((sum, d) => sum + Number(d.value || 0), 0);
+            const stageAssigneeIds = assigneesByStage[s.id] ?? [];
             return (
-              <DroppableColumn key={s.id} id={s.id} name={s.name} count={stageDeals.length} total={total}>
+              <DroppableColumn
+                key={s.id}
+                id={s.id}
+                name={s.name}
+                count={stageDeals.length}
+                total={total}
+                assignees={stageAssigneeIds.map((id) => profileById[id]).filter(Boolean)}
+                allProfiles={profiles.data ?? []}
+                canManage={canManageAssignees}
+                onToggleAssignee={async (userId, isAssigned) => {
+                  if (isAssigned) {
+                    const { error } = await supabase.from("stage_assignees").delete().eq("stage_id", s.id).eq("user_id", userId);
+                    if (error) { toast.error(error.message); return; }
+                  } else {
+                    const { error } = await supabase.from("stage_assignees").insert({ stage_id: s.id, user_id: userId });
+                    if (error) { toast.error(error.message); return; }
+                  }
+                  qc.invalidateQueries({ queryKey: ["stage-assignees"] });
+                }}
+              >
                 {stageDeals.map((d) => <DealCard key={d.id} deal={d} />)}
               </DroppableColumn>
             );
