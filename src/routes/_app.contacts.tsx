@@ -5,9 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth, canEdit } from "@/lib/auth-context";
 import { initials, timeAgo } from "@/lib/format";
 import { TempBadge, Pill } from "@/components/Badge";
-import { Plus, X, Search, Upload } from "lucide-react";
+import { Plus, X, Search, Upload, Download, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ImportDialog, type ImportConfig } from "@/components/ImportDialog";
+import { exportToCsv } from "@/lib/csv-export";
 
 const CONTACTS_IMPORT: ImportConfig = {
   entity: "contacts",
@@ -45,6 +46,7 @@ function ContactsPage() {
   const [openAdd, setOpenAdd] = useState(false);
   const [openImport, setOpenImport] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<any | null>(null);
 
   const contacts = useQuery({
     queryKey: ["contacts", search, tempFilter],
@@ -92,7 +94,52 @@ function ContactsPage() {
     qc.invalidateQueries({ queryKey: ["contacts"] });
   };
 
+  const updateContact = async (id: string, form: FormData) => {
+    const payload = {
+      first_name: String(form.get("first_name") || "").trim(),
+      last_name: String(form.get("last_name") || "").trim(),
+      email: String(form.get("email") || "").trim() || null,
+      phone: String(form.get("phone") || "").trim() || null,
+      role_title: String(form.get("role_title") || "").trim() || null,
+      company_id: String(form.get("company_id") || "") || null,
+      temperature: (String(form.get("temperature") || "warm") as "hot" | "warm" | "cold"),
+    };
+    if (!payload.first_name || !payload.last_name) { toast.error("First and last name required"); return; }
+    const { error } = await supabase.from("contacts").update(payload).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Contact updated");
+    setEditing(null);
+    qc.invalidateQueries({ queryKey: ["contacts"] });
+  };
+
+  const deleteContact = async (id: string) => {
+    if (!confirm("Delete this contact? This cannot be undone.")) return;
+    const { error } = await supabase.from("contacts").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Contact deleted");
+    setSelectedId(null);
+    qc.invalidateQueries({ queryKey: ["contacts"] });
+  };
+
+  const exportContacts = () => {
+    const rows = (contacts.data ?? []).map((c: any) => ({
+      first_name: c.first_name,
+      last_name: c.last_name,
+      email: c.email ?? "",
+      phone: c.phone ?? "",
+      role_title: c.role_title ?? "",
+      company: c.companies?.name ?? "",
+      temperature: c.temperature ?? "",
+      last_contacted_at: c.last_contacted_at ?? "",
+      created_at: c.created_at,
+    }));
+    if (!rows.length) { toast.error("Nothing to export"); return; }
+    exportToCsv(`contacts-${new Date().toISOString().slice(0, 10)}.csv`, rows);
+    toast.success(`Exported ${rows.length} contacts`);
+  };
+
   const selected = contacts.data?.find((c: any) => c.id === selectedId);
+  const canDelete = role === "admin" || role === "sales_manager";
 
   return (
     <div className="space-y-5 max-w-7xl">
@@ -101,24 +148,33 @@ function ContactsPage() {
           <h1 className="text-2xl text-foreground" style={{ fontWeight: 500 }}>Contacts</h1>
           <p className="text-sm text-muted-foreground mt-1">{contacts.data?.length ?? 0} total</p>
         </div>
-        {canEdit(role) && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setOpenImport(true)}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted"
-              style={{ fontWeight: 500 }}
-            >
-              <Upload className="h-4 w-4" /> Import
-            </button>
-            <button
-              onClick={() => setOpenAdd(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover"
-              style={{ fontWeight: 500 }}
-            >
-              <Plus className="h-4 w-4" /> Add contact
-            </button>
-          </div>
-        )}
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={exportContacts}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted"
+            style={{ fontWeight: 500 }}
+          >
+            <Download className="h-4 w-4" /> Export
+          </button>
+          {canEdit(role) && (
+            <>
+              <button
+                onClick={() => setOpenImport(true)}
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted"
+                style={{ fontWeight: 500 }}
+              >
+                <Upload className="h-4 w-4" /> Import
+              </button>
+              <button
+                onClick={() => setOpenAdd(true)}
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover"
+                style={{ fontWeight: 500 }}
+              >
+                <Plus className="h-4 w-4" /> Add contact
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -234,7 +290,54 @@ function ContactsPage() {
       {selected && (
         <div className="fixed inset-0 z-50 flex">
           <div className="flex-1 bg-foreground/20" onClick={() => setSelectedId(null)} />
-          <ContactDetail contact={selected} onClose={() => setSelectedId(null)} />
+          <ContactDetail
+            contact={selected}
+            onClose={() => setSelectedId(null)}
+            canEditRow={canEdit(role)}
+            canDelete={canDelete}
+            onEdit={() => { setEditing(selected); setSelectedId(null); }}
+            onDelete={() => deleteContact(selected.id)}
+          />
+        </div>
+      )}
+
+      {/* Slide-in edit panel */}
+      {editing && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="flex-1 bg-foreground/20" onClick={() => setEditing(null)} />
+          <div className="w-full max-w-md bg-card h-full overflow-y-auto p-6 border-l border-border">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg text-foreground" style={{ fontWeight: 500 }}>Edit contact</h2>
+              <button onClick={() => setEditing(null)}><X className="h-5 w-5 text-muted-foreground" /></button>
+            </div>
+            <form onSubmit={(e: FormEvent<HTMLFormElement>) => { e.preventDefault(); updateContact(editing.id, new FormData(e.currentTarget)); }} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="First name" name="first_name" required defaultValue={editing.first_name} />
+                <Field label="Last name" name="last_name" required defaultValue={editing.last_name} />
+              </div>
+              <Field label="Email" name="email" type="email" defaultValue={editing.email ?? ""} />
+              <Field label="Phone" name="phone" defaultValue={editing.phone ?? ""} />
+              <Field label="Role / Title" name="role_title" defaultValue={editing.role_title ?? ""} />
+              <div>
+                <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>Company</label>
+                <select name="company_id" defaultValue={editing.company_id ?? ""} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary">
+                  <option value="">— None —</option>
+                  {(companies.data ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>Temperature</label>
+                <select name="temperature" defaultValue={editing.temperature ?? "warm"} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary">
+                  <option value="hot">Hot</option>
+                  <option value="warm">Warm</option>
+                  <option value="cold">Cold</option>
+                </select>
+              </div>
+              <button type="submit" className="w-full rounded-full bg-primary px-4 py-2.5 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
+                Save changes
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
@@ -249,7 +352,7 @@ function ContactsPage() {
   );
 }
 
-function Field({ label, name, type = "text", required = false }: { label: string; name: string; type?: string; required?: boolean }) {
+function Field({ label, name, type = "text", required = false, defaultValue }: { label: string; name: string; type?: string; required?: boolean; defaultValue?: string }) {
   return (
     <div>
       <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>{label}{required && <span className="text-destructive"> *</span>}</label>
@@ -257,6 +360,7 @@ function Field({ label, name, type = "text", required = false }: { label: string
         name={name}
         type={type}
         required={required}
+        defaultValue={defaultValue}
         maxLength={255}
         className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30"
       />
@@ -264,7 +368,7 @@ function Field({ label, name, type = "text", required = false }: { label: string
   );
 }
 
-function ContactDetail({ contact, onClose }: { contact: any; onClose: () => void }) {
+function ContactDetail({ contact, onClose, canEditRow, canDelete, onEdit, onDelete }: { contact: any; onClose: () => void; canEditRow: boolean; canDelete: boolean; onEdit: () => void; onDelete: () => void }) {
   const activities = useQuery({
     queryKey: ["activities", contact.id],
     queryFn: async () => {
@@ -282,7 +386,19 @@ function ContactDetail({ contact, onClose }: { contact: any; onClose: () => void
     <div className="w-full max-w-md bg-card h-full overflow-y-auto p-6 border-l border-border">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-lg text-foreground" style={{ fontWeight: 500 }}>Contact details</h2>
-        <button onClick={onClose}><X className="h-5 w-5 text-muted-foreground" /></button>
+        <div className="flex items-center gap-1">
+          {canEditRow && (
+            <button onClick={onEdit} title="Edit" className="p-2 rounded-full hover:bg-muted text-foreground">
+              <Pencil className="h-4 w-4" />
+            </button>
+          )}
+          {canDelete && (
+            <button onClick={onDelete} title="Delete" className="p-2 rounded-full hover:bg-destructive/10 text-destructive">
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted"><X className="h-5 w-5 text-muted-foreground" /></button>
+        </div>
       </div>
       <div className="flex items-center gap-3 mb-5">
         <div className="h-14 w-14 rounded-full bg-secondary flex items-center justify-center text-base text-foreground" style={{ fontWeight: 500 }}>

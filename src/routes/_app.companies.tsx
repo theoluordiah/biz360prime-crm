@@ -4,9 +4,10 @@ import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, canEdit } from "@/lib/auth-context";
 import { formatCurrency } from "@/lib/format";
-import { Plus, X, Building2, Upload } from "lucide-react";
+import { Plus, X, Building2, Upload, Download, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ImportDialog, type ImportConfig } from "@/components/ImportDialog";
+import { exportToCsv } from "@/lib/csv-export";
 
 const COMPANIES_IMPORT: ImportConfig = {
   entity: "companies",
@@ -32,6 +33,8 @@ function CompaniesPage() {
   const qc = useQueryClient();
   const [openAdd, setOpenAdd] = useState(false);
   const [openImport, setOpenImport] = useState(false);
+  const [editing, setEditing] = useState<any | null>(null);
+  const canDelete = role === "admin" || role === "sales_manager";
 
   const companies = useQuery({
     queryKey: ["companies-full"],
@@ -67,6 +70,44 @@ function CompaniesPage() {
     qc.invalidateQueries({ queryKey: ["companies-full"] });
   };
 
+  const updateCompany = async (id: string, form: FormData) => {
+    const name = String(form.get("name") || "").trim();
+    if (!name) { toast.error("Name required"); return; }
+    const { error } = await supabase.from("companies").update({
+      name,
+      industry: String(form.get("industry") || "").trim() || null,
+      website: String(form.get("website") || "").trim() || null,
+    }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Company updated");
+    setEditing(null);
+    qc.invalidateQueries({ queryKey: ["companies-full"] });
+  };
+
+  const deleteCompany = async (id: string) => {
+    if (!confirm("Delete this company? Linked contacts and deals will be detached.")) return;
+    const { error } = await supabase.from("companies").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Company deleted");
+    qc.invalidateQueries({ queryKey: ["companies-full"] });
+  };
+
+  const exportCompanies = () => {
+    const rows = (companies.data ?? []).map((c: any) => ({
+      name: c.name,
+      industry: c.industry ?? "",
+      website: c.website ?? "",
+      notes: c.notes ?? "",
+      contact_count: c.contact_count,
+      deal_count: c.deal_count,
+      revenue: c.revenue,
+      created_at: c.created_at,
+    }));
+    if (!rows.length) { toast.error("Nothing to export"); return; }
+    exportToCsv(`companies-${new Date().toISOString().slice(0, 10)}.csv`, rows);
+    toast.success(`Exported ${rows.length} companies`);
+  };
+
   return (
     <div className="space-y-5 max-w-7xl">
       <div className="flex justify-between items-center">
@@ -74,16 +115,21 @@ function CompaniesPage() {
           <h1 className="text-2xl text-foreground" style={{ fontWeight: 500 }}>Companies</h1>
           <p className="text-sm text-muted-foreground mt-1">{companies.data?.length ?? 0} total</p>
         </div>
-        {canEdit(role) && (
-          <div className="flex gap-2">
-            <button onClick={() => setOpenImport(true)} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted" style={{ fontWeight: 500 }}>
-              <Upload className="h-4 w-4" /> Import
-            </button>
-            <button onClick={() => setOpenAdd(true)} className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
-              <Plus className="h-4 w-4" /> Add company
-            </button>
-          </div>
-        )}
+        <div className="flex gap-2 flex-wrap">
+          <button onClick={exportCompanies} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted" style={{ fontWeight: 500 }}>
+            <Download className="h-4 w-4" /> Export
+          </button>
+          {canEdit(role) && (
+            <>
+              <button onClick={() => setOpenImport(true)} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground hover:bg-muted" style={{ fontWeight: 500 }}>
+                <Upload className="h-4 w-4" /> Import
+              </button>
+              <button onClick={() => setOpenAdd(true)} className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
+                <Plus className="h-4 w-4" /> Add company
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {(companies.data?.length ?? 0) === 0 ? (
@@ -108,6 +154,18 @@ function CompaniesPage() {
                   <div className="text-base text-foreground truncate" style={{ fontWeight: 500 }}>{c.name}</div>
                   <div className="text-xs text-muted-foreground truncate">{c.industry || c.website || "—"}</div>
                 </div>
+                {canEdit(role) && (
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button onClick={() => setEditing(c)} title="Edit" className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground">
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    {canDelete && (
+                      <button onClick={() => deleteCompany(c.id)} title="Delete" className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-border">
                 <Stat label="Contacts" value={c.contact_count} />
@@ -116,6 +174,26 @@ function CompaniesPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {editing && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="flex-1 bg-foreground/20" onClick={() => setEditing(null)} />
+          <div className="w-full max-w-md bg-card h-full overflow-y-auto p-6 border-l border-border">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg text-foreground" style={{ fontWeight: 500 }}>Edit company</h2>
+              <button onClick={() => setEditing(null)}><X className="h-5 w-5 text-muted-foreground" /></button>
+            </div>
+            <form onSubmit={(e: FormEvent<HTMLFormElement>) => { e.preventDefault(); updateCompany(editing.id, new FormData(e.currentTarget)); }} className="space-y-3">
+              <Field label="Company name" name="name" required defaultValue={editing.name} />
+              <Field label="Industry" name="industry" defaultValue={editing.industry ?? ""} />
+              <Field label="Website" name="website" defaultValue={editing.website ?? ""} />
+              <button type="submit" className="w-full rounded-full bg-primary px-4 py-2.5 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
+                Save changes
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
@@ -159,11 +237,11 @@ function Stat({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function Field({ label, name, required = false }: { label: string; name: string; required?: boolean }) {
+function Field({ label, name, required = false, defaultValue }: { label: string; name: string; required?: boolean; defaultValue?: string }) {
   return (
     <div>
       <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>{label}{required && <span className="text-destructive"> *</span>}</label>
-      <input name={name} required={required} maxLength={255} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
+      <input name={name} required={required} defaultValue={defaultValue} maxLength={255} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
     </div>
   );
 }
