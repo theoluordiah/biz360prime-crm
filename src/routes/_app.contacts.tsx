@@ -368,7 +368,7 @@ function Field({ label, name, type = "text", required = false, defaultValue }: {
   );
 }
 
-function ContactDetail({ contact, onClose }: { contact: any; onClose: () => void }) {
+function ContactDetail({ contact, onClose, canEditRow, canDelete, onEdit, onDelete }: { contact: any; onClose: () => void; canEditRow: boolean; canDelete: boolean; onEdit: () => void; onDelete: () => void }) {
   const activities = useQuery({
     queryKey: ["activities", contact.id],
     queryFn: async () => {
@@ -386,7 +386,19 @@ function ContactDetail({ contact, onClose }: { contact: any; onClose: () => void
     <div className="w-full max-w-md bg-card h-full overflow-y-auto p-6 border-l border-border">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-lg text-foreground" style={{ fontWeight: 500 }}>Contact details</h2>
-        <button onClick={onClose}><X className="h-5 w-5 text-muted-foreground" /></button>
+        <div className="flex items-center gap-1">
+          {canEditRow && (
+            <button onClick={onEdit} title="Edit" className="p-2 rounded-full hover:bg-muted text-foreground">
+              <Pencil className="h-4 w-4" />
+            </button>
+          )}
+          {canDelete && (
+            <button onClick={onDelete} title="Delete" className="p-2 rounded-full hover:bg-destructive/10 text-destructive">
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted"><X className="h-5 w-5 text-muted-foreground" /></button>
+        </div>
       </div>
       <div className="flex items-center gap-3 mb-5">
         <div className="h-14 w-14 rounded-full bg-secondary flex items-center justify-center text-base text-foreground" style={{ fontWeight: 500 }}>
