@@ -205,16 +205,95 @@ function PipelinePage() {
   );
 }
 
-function DroppableColumn({ id, name, count, total, children }: { id: string; name: string; count: number; total: number; children: React.ReactNode }) {
+function DroppableColumn({
+  id,
+  name,
+  count,
+  total,
+  assignees,
+  allProfiles,
+  canManage,
+  onToggleAssignee,
+  children,
+}: {
+  id: string;
+  name: string;
+  count: number;
+  total: number;
+  assignees: any[];
+  allProfiles: any[];
+  canManage: boolean;
+  onToggleAssignee: (userId: string, isAssigned: boolean) => void | Promise<void>;
+  children: React.ReactNode;
+}) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const [open, setOpen] = useState(false);
+  const assignedIds = new Set(assignees.map((a) => a.id));
+
   return (
     <div ref={setNodeRef} className={`w-72 shrink-0 rounded-xl border border-border bg-card ${isOver ? "ring-2 ring-secondary" : ""}`}>
-      <div className="px-4 py-3 border-b border-border">
+      <div className="px-4 py-3 border-b border-border relative">
         <div className="flex items-center justify-between">
           <span className="text-sm text-foreground" style={{ fontWeight: 500 }}>{name}</span>
           <span className="text-xs text-muted-foreground">{count}</span>
         </div>
         <div className="text-xs text-muted-foreground mt-0.5">{formatCurrency(total)}</div>
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex -space-x-1.5">
+            {assignees.length === 0 && <span className="text-[10px] text-muted-foreground">No team assigned</span>}
+            {assignees.slice(0, 4).map((a: any) => (
+              <div
+                key={a.id}
+                title={a.display_name || a.email}
+                className="h-6 w-6 rounded-full bg-secondary border-2 border-card flex items-center justify-center text-[10px] text-foreground"
+                style={{ fontWeight: 500 }}
+              >
+                {initials(a.display_name || a.email || "?")}
+              </div>
+            ))}
+            {assignees.length > 4 && (
+              <div className="h-6 w-6 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[10px] text-muted-foreground">
+                +{assignees.length - 4}
+              </div>
+            )}
+          </div>
+          {canManage && (
+            <button
+              onClick={() => setOpen((v) => !v)}
+              title="Manage team"
+              className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground"
+            >
+              <Users className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+        {open && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <div className="absolute right-2 top-full mt-1 z-50 w-60 rounded-lg border border-border bg-card shadow-lg p-2 max-h-72 overflow-y-auto">
+              <div className="text-xs text-muted-foreground px-2 py-1.5">Assign to {name}</div>
+              {allProfiles.length === 0 && (
+                <div className="text-xs text-muted-foreground px-2 py-2">No team members</div>
+              )}
+              {allProfiles.map((p: any) => {
+                const isAssigned = assignedIds.has(p.id);
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => onToggleAssignee(p.id, isAssigned)}
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted text-left"
+                  >
+                    <div className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center text-[10px] text-foreground" style={{ fontWeight: 500 }}>
+                      {initials(p.display_name || p.email || "?")}
+                    </div>
+                    <span className="flex-1 text-xs text-foreground truncate">{p.display_name || p.email}</span>
+                    {isAssigned && <Check className="h-3.5 w-3.5 text-primary" />}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
       <div className="p-3 space-y-2 min-h-[200px]">
         {children}
