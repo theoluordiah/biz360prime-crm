@@ -33,6 +33,8 @@ function CompaniesPage() {
   const qc = useQueryClient();
   const [openAdd, setOpenAdd] = useState(false);
   const [openImport, setOpenImport] = useState(false);
+  const [editing, setEditing] = useState<any | null>(null);
+  const canDelete = role === "admin" || role === "sales_manager";
 
   const companies = useQuery({
     queryKey: ["companies-full"],
