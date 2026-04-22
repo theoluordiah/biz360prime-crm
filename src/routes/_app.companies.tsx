@@ -70,6 +70,44 @@ function CompaniesPage() {
     qc.invalidateQueries({ queryKey: ["companies-full"] });
   };
 
+  const updateCompany = async (id: string, form: FormData) => {
+    const name = String(form.get("name") || "").trim();
+    if (!name) { toast.error("Name required"); return; }
+    const { error } = await supabase.from("companies").update({
+      name,
+      industry: String(form.get("industry") || "").trim() || null,
+      website: String(form.get("website") || "").trim() || null,
+    }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Company updated");
+    setEditing(null);
+    qc.invalidateQueries({ queryKey: ["companies-full"] });
+  };
+
+  const deleteCompany = async (id: string) => {
+    if (!confirm("Delete this company? Linked contacts and deals will be detached.")) return;
+    const { error } = await supabase.from("companies").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Company deleted");
+    qc.invalidateQueries({ queryKey: ["companies-full"] });
+  };
+
+  const exportCompanies = () => {
+    const rows = (companies.data ?? []).map((c: any) => ({
+      name: c.name,
+      industry: c.industry ?? "",
+      website: c.website ?? "",
+      notes: c.notes ?? "",
+      contact_count: c.contact_count,
+      deal_count: c.deal_count,
+      revenue: c.revenue,
+      created_at: c.created_at,
+    }));
+    if (!rows.length) { toast.error("Nothing to export"); return; }
+    exportToCsv(`companies-${new Date().toISOString().slice(0, 10)}.csv`, rows);
+    toast.success(`Exported ${rows.length} companies`);
+  };
+
   return (
     <div className="space-y-5 max-w-7xl">
       <div className="flex justify-between items-center">
