@@ -46,6 +46,7 @@ function ContactsPage() {
   const [openAdd, setOpenAdd] = useState(false);
   const [openImport, setOpenImport] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<any | null>(null);
 
   const contacts = useQuery({
     queryKey: ["contacts", search, tempFilter],
