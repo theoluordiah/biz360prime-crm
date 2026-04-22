@@ -4,7 +4,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, canEdit } from "@/lib/auth-context";
 import { formatCurrency, initials } from "@/lib/format";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Users, Check } from "lucide-react";
 import { toast } from "sonner";
 import {
   DndContext,
