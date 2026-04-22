@@ -237,11 +237,11 @@ function Stat({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function Field({ label, name, required = false }: { label: string; name: string; required?: boolean }) {
+function Field({ label, name, required = false, defaultValue }: { label: string; name: string; required?: boolean; defaultValue?: string }) {
   return (
     <div>
       <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>{label}{required && <span className="text-destructive"> *</span>}</label>
-      <input name={name} required={required} maxLength={255} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
+      <input name={name} required={required} defaultValue={defaultValue} maxLength={255} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
     </div>
   );
 }
