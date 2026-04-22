@@ -42,6 +42,38 @@ function PipelinePage() {
     },
   });
 
+  const profiles = useQuery({
+    queryKey: ["profiles-all"],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("id, display_name, email");
+      return data ?? [];
+    },
+  });
+
+  const stageAssignees = useQuery({
+    queryKey: ["stage-assignees"],
+    queryFn: async () => {
+      const { data } = await supabase.from("stage_assignees").select("stage_id, user_id");
+      return data ?? [];
+    },
+  });
+
+  const assigneesByStage = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    (stageAssignees.data ?? []).forEach((a: any) => {
+      (map[a.stage_id] ??= []).push(a.user_id);
+    });
+    return map;
+  }, [stageAssignees.data]);
+
+  const profileById = useMemo(() => {
+    const map: Record<string, any> = {};
+    (profiles.data ?? []).forEach((p: any) => { map[p.id] = p; });
+    return map;
+  }, [profiles.data]);
+
+  const canManageAssignees = role === "admin" || role === "sales_manager";
+
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const onDragEnd = async (e: DragEndEvent) => {
