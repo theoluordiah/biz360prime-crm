@@ -94,7 +94,52 @@ function ContactsPage() {
     qc.invalidateQueries({ queryKey: ["contacts"] });
   };
 
+  const updateContact = async (id: string, form: FormData) => {
+    const payload = {
+      first_name: String(form.get("first_name") || "").trim(),
+      last_name: String(form.get("last_name") || "").trim(),
+      email: String(form.get("email") || "").trim() || null,
+      phone: String(form.get("phone") || "").trim() || null,
+      role_title: String(form.get("role_title") || "").trim() || null,
+      company_id: String(form.get("company_id") || "") || null,
+      temperature: (String(form.get("temperature") || "warm") as "hot" | "warm" | "cold"),
+    };
+    if (!payload.first_name || !payload.last_name) { toast.error("First and last name required"); return; }
+    const { error } = await supabase.from("contacts").update(payload).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Contact updated");
+    setEditing(null);
+    qc.invalidateQueries({ queryKey: ["contacts"] });
+  };
+
+  const deleteContact = async (id: string) => {
+    if (!confirm("Delete this contact? This cannot be undone.")) return;
+    const { error } = await supabase.from("contacts").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Contact deleted");
+    setSelectedId(null);
+    qc.invalidateQueries({ queryKey: ["contacts"] });
+  };
+
+  const exportContacts = () => {
+    const rows = (contacts.data ?? []).map((c: any) => ({
+      first_name: c.first_name,
+      last_name: c.last_name,
+      email: c.email ?? "",
+      phone: c.phone ?? "",
+      role_title: c.role_title ?? "",
+      company: c.companies?.name ?? "",
+      temperature: c.temperature ?? "",
+      last_contacted_at: c.last_contacted_at ?? "",
+      created_at: c.created_at,
+    }));
+    if (!rows.length) { toast.error("Nothing to export"); return; }
+    exportToCsv(`contacts-${new Date().toISOString().slice(0, 10)}.csv`, rows);
+    toast.success(`Exported ${rows.length} contacts`);
+  };
+
   const selected = contacts.data?.find((c: any) => c.id === selectedId);
+  const canDelete = role === "admin" || role === "sales_manager";
 
   return (
     <div className="space-y-5 max-w-7xl">
