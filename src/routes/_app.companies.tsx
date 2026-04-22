@@ -4,9 +4,10 @@ import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, canEdit } from "@/lib/auth-context";
 import { formatCurrency } from "@/lib/format";
-import { Plus, X, Building2, Upload } from "lucide-react";
+import { Plus, X, Building2, Upload, Download, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ImportDialog, type ImportConfig } from "@/components/ImportDialog";
+import { exportToCsv } from "@/lib/csv-export";
 
 const COMPANIES_IMPORT: ImportConfig = {
   entity: "companies",
