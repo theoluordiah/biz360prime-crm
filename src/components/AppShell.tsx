@@ -16,7 +16,7 @@ import {
   Inbox,
   FileText,
 } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth, isAdmin } from "@/lib/auth-context";
 import { initials } from "@/lib/format";
 import { useState } from "react";
 import { NotificationsBell } from "@/components/NotificationsBell";
@@ -81,8 +81,9 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 export function AppShell() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile, signOut } = useAuth();
+  const { profile, role, signOut } = useAuth();
   const [search, setSearch] = useState("");
+  const adminNav = ADMIN_NAV.filter((item) => item.to !== "/roles" || isAdmin(role));
 
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
@@ -101,7 +102,7 @@ export function AppShell() {
             <NavLink key={item.to} item={item} active={isActive(item.to)} />
           ))}
           <div className="my-3 border-t border-border" />
-          {ADMIN_NAV.map((item) => (
+          {adminNav.map((item) => (
             <NavLink key={item.to} item={item} active={isActive(item.to)} />
           ))}
         </nav>
