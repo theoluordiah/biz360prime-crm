@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, isAdmin, type AppRole } from "@/lib/auth-context";
 import { initials, formatDate } from "@/lib/format";
-import { Shield, Lock } from "lucide-react";
+import { Shield, Lock, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/roles")({
@@ -15,6 +16,8 @@ const ROLES: AppRole[] = ["admin", "sales_manager", "sales_rep", "viewer"];
 function RolesPage() {
   const { role: myRole } = useAuth();
   const qc = useQueryClient();
+  const [pending, setPending] = useState<{ user: any; newRole: AppRole } | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const users = useQuery({
     queryKey: ["users-roles"],
@@ -24,7 +27,6 @@ function RolesPage() {
       const map: Record<string, AppRole> = {};
       (roles ?? []).forEach((r: any) => {
         const cur = map[r.user_id];
-        // pick the highest priority role
         const priority: Record<AppRole, number> = { admin: 1, sales_manager: 2, sales_rep: 3, viewer: 4 };
         if (!cur || priority[r.role as AppRole] < priority[cur]) map[r.user_id] = r.role;
       });
@@ -33,14 +35,23 @@ function RolesPage() {
     enabled: isAdmin(myRole),
   });
 
-  const updateRole = async (userId: string, newRole: AppRole) => {
-    // Delete existing roles, insert new one
-    const { error: delErr } = await supabase.from("user_roles").delete().eq("user_id", userId);
-    if (delErr) { toast.error(delErr.message); return; }
-    const { error: insErr } = await supabase.from("user_roles").insert({ user_id: userId, role: newRole });
-    if (insErr) { toast.error(insErr.message); return; }
-    toast.success("Role updated");
+  const requestRoleChange = (user: any, newRole: AppRole) => {
+    if (newRole === user.role) return;
+    setPending({ user, newRole });
+  };
+
+  const confirmRoleChange = async () => {
+    if (!pending) return;
+    setSaving(true);
+    const { user, newRole } = pending;
+    const { error: delErr } = await supabase.from("user_roles").delete().eq("user_id", user.id);
+    if (delErr) { toast.error(delErr.message); setSaving(false); return; }
+    const { error: insErr } = await supabase.from("user_roles").insert({ user_id: user.id, role: newRole });
+    if (insErr) { toast.error(insErr.message); setSaving(false); return; }
+    toast.success(`${user.display_name} is now ${roleLabel(newRole)}`);
     qc.invalidateQueries({ queryKey: ["users-roles"] });
+    setSaving(false);
+    setPending(null);
   };
 
   if (!isAdmin(myRole)) {
@@ -90,7 +101,7 @@ function RolesPage() {
                 <td className="px-5 py-3">
                   <select
                     value={u.role}
-                    onChange={(e) => updateRole(u.id, e.target.value as AppRole)}
+                    onChange={(e) => requestRoleChange(u, e.target.value as AppRole)}
                     className="rounded-lg border border-input bg-input-bg px-3 py-1.5 text-sm outline-none focus:border-secondary"
                   >
                     {ROLES.map((r) => <option key={r} value={r}>{roleLabel(r)}</option>)}
