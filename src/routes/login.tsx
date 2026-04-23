@@ -8,7 +8,7 @@ export const Route = createFileRoute("/login")({
   component: AuthPage,
 });
 
-type Mode = "signin" | "signup";
+type Mode = "signin" | "signup" | "forgot";
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -37,6 +37,15 @@ function AuthPage() {
         if (error) throw error;
         toast.success("Welcome back!");
         navigate({ to: "/dashboard" });
+      } else if (mode === "forgot") {
+        const cleanEmail = email.trim().toLowerCase();
+        if (!cleanEmail) throw new Error("Please enter your email");
+        const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        toast.success("Check your email for a reset link");
+        setMode("signin");
       } else {
         const cleanName = name.trim();
         if (!cleanName) throw new Error("Please enter a username");
