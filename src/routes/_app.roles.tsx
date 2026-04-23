@@ -129,6 +129,60 @@ function RolesPage() {
           ))}
         </div>
       </div>
+
+      {/* Confirmation modal */}
+      {pending && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+          onClick={() => !saving && setPending(null)}
+        >
+          <div
+            className="w-full max-w-md bg-card border border-border rounded-xl p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3">
+              <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${pending.newRole === "admin" ? "bg-destructive/10" : "bg-primary/10"}`}>
+                <AlertTriangle className={`h-5 w-5 ${pending.newRole === "admin" ? "text-destructive" : "text-primary"}`} />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base text-foreground" style={{ fontWeight: 500 }}>
+                  {pending.newRole === "admin" ? "Grant Admin access?" : "Change role?"}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1.5">
+                  You're changing <span className="text-foreground" style={{ fontWeight: 500 }}>{pending.user.display_name}</span> from{" "}
+                  <span className="text-foreground">{roleLabel(pending.user.role)}</span> to{" "}
+                  <span className="text-foreground" style={{ fontWeight: 500 }}>{roleLabel(pending.newRole)}</span>.
+                </p>
+                {pending.newRole === "admin" && (
+                  <p className="text-xs text-destructive mt-2">
+                    Admins have full access — they can manage users, billing, and all data.
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => setPending(null)}
+                className="rounded-full border border-border bg-card px-4 py-2 text-sm hover:bg-muted transition-colors disabled:opacity-60"
+                style={{ fontWeight: 500 }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={confirmRoleChange}
+                className={`rounded-full px-4 py-2 text-sm transition-colors disabled:opacity-60 ${pending.newRole === "admin" ? "bg-destructive text-destructive-foreground hover:opacity-90" : "bg-primary text-primary-foreground hover:bg-primary-hover"}`}
+                style={{ fontWeight: 500 }}
+              >
+                {saving ? "Saving..." : pending.newRole === "admin" ? "Yes, grant Admin" : "Confirm change"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
