@@ -81,38 +81,129 @@ function AuthPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             {mode === "signin"
               ? "Sign in to your workspace."
+              : mode === "forgot"
+              ? "Enter your email and we'll send a reset link."
               : "Create your workspace — pick a username and password."}
           </p>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-6">
-          {/* Mode toggle */}
-          <div className="flex bg-muted rounded-lg p-1 mb-5">
+          {mode !== "forgot" && (
+            <div className="flex bg-muted rounded-lg p-1 mb-5">
+              <button
+                type="button"
+                onClick={() => setMode("signin")}
+                className="flex-1 rounded-md py-1.5 text-sm transition-colors"
+                style={{
+                  backgroundColor: mode === "signin" ? "var(--color-card)" : "transparent",
+                  color: mode === "signin" ? "var(--color-foreground)" : "var(--color-muted-foreground)",
+                  fontWeight: 500,
+                }}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("signup")}
+                className="flex-1 rounded-md py-1.5 text-sm transition-colors"
+                style={{
+                  backgroundColor: mode === "signup" ? "var(--color-card)" : "transparent",
+                  color: mode === "signup" ? "var(--color-foreground)" : "var(--color-muted-foreground)",
+                  fontWeight: 500,
+                }}
+              >
+                Sign up
+              </button>
+            </div>
+          )}
+
+          <form onSubmit={submit} className="space-y-4">
+            {mode === "signin" || mode === "forgot" ? (
+              <div>
+                <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoFocus
+                  placeholder="you@example.com"
+                  className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30"
+                />
+              </div>
+            ) : (
+              <div>
+                <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  maxLength={60}
+                  autoFocus
+                  className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30"
+                />
+              </div>
+            )}
+            {mode !== "forgot" && (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-sm text-foreground" style={{ fontWeight: 500 }}>
+                    Password
+                  </label>
+                  {mode === "signin" && (
+                    <button
+                      type="button"
+                      onClick={() => setMode("forgot")}
+                      className="text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30"
+                />
+              </div>
+            )}
             <button
-              type="button"
-              onClick={() => setMode("signin")}
-              className="flex-1 rounded-md py-1.5 text-sm transition-colors"
-              style={{
-                backgroundColor: mode === "signin" ? "var(--color-card)" : "transparent",
-                color: mode === "signin" ? "var(--color-foreground)" : "var(--color-muted-foreground)",
-                fontWeight: 500,
-              }}
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-full bg-primary px-5 py-2.5 text-sm text-primary-foreground hover:bg-primary-hover transition-colors disabled:opacity-60"
+              style={{ fontWeight: 500 }}
             >
-              Sign in
+              {loading
+                ? mode === "signin"
+                  ? "Signing in..."
+                  : mode === "forgot"
+                  ? "Sending link..."
+                  : "Creating workspace..."
+                : mode === "signin"
+                ? "Sign in"
+                : mode === "forgot"
+                ? "Send reset link"
+                : "Sign up & continue"}
             </button>
-            <button
-              type="button"
-              onClick={() => setMode("signup")}
-              className="flex-1 rounded-md py-1.5 text-sm transition-colors"
-              style={{
-                backgroundColor: mode === "signup" ? "var(--color-card)" : "transparent",
-                color: mode === "signup" ? "var(--color-foreground)" : "var(--color-muted-foreground)",
-                fontWeight: 500,
-              }}
-            >
-              Sign up
-            </button>
-          </div>
+            {mode === "forgot" && (
+              <button
+                type="button"
+                onClick={() => setMode("signin")}
+                className="w-full text-center text-xs text-muted-foreground hover:text-foreground"
+              >
+                Back to sign in
+              </button>
+            )}
+          </form>
+        </div>
 
           <form onSubmit={submit} className="space-y-4">
             {mode === "signin" ? (
