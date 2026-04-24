@@ -18,7 +18,6 @@ import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppRolesRouteImport } from './routes/_app.roles'
 import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppPipelineRouteImport } from './routes/_app.pipeline'
-import { Route as AppLeadsRouteImport } from './routes/_app.leads'
 import { Route as AppInboxRouteImport } from './routes/_app.inbox'
 import { Route as AppEmailSyncRouteImport } from './routes/_app.email-sync'
 import { Route as AppDocumentsRouteImport } from './routes/_app.documents'
@@ -70,11 +69,6 @@ const AppReportsRoute = AppReportsRouteImport.update({
 const AppPipelineRoute = AppPipelineRouteImport.update({
   id: '/pipeline',
   path: '/pipeline',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppLeadsRoute = AppLeadsRouteImport.update({
-  id: '/leads',
-  path: '/leads',
   getParentRoute: () => AppRoute,
 } as any)
 const AppInboxRoute = AppInboxRouteImport.update({
@@ -130,7 +124,6 @@ export interface FileRoutesByFullPath {
   '/documents': typeof AppDocumentsRoute
   '/email-sync': typeof AppEmailSyncRoute
   '/inbox': typeof AppInboxRoute
-  '/leads': typeof AppLeadsRoute
   '/pipeline': typeof AppPipelineRoute
   '/reports': typeof AppReportsRoute
   '/roles': typeof AppRolesRoute
@@ -149,7 +142,6 @@ export interface FileRoutesByTo {
   '/documents': typeof AppDocumentsRoute
   '/email-sync': typeof AppEmailSyncRoute
   '/inbox': typeof AppInboxRoute
-  '/leads': typeof AppLeadsRoute
   '/pipeline': typeof AppPipelineRoute
   '/reports': typeof AppReportsRoute
   '/roles': typeof AppRolesRoute
@@ -170,7 +162,6 @@ export interface FileRoutesById {
   '/_app/documents': typeof AppDocumentsRoute
   '/_app/email-sync': typeof AppEmailSyncRoute
   '/_app/inbox': typeof AppInboxRoute
-  '/_app/leads': typeof AppLeadsRoute
   '/_app/pipeline': typeof AppPipelineRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/roles': typeof AppRolesRoute
@@ -191,7 +182,6 @@ export interface FileRouteTypes {
     | '/documents'
     | '/email-sync'
     | '/inbox'
-    | '/leads'
     | '/pipeline'
     | '/reports'
     | '/roles'
@@ -210,7 +200,6 @@ export interface FileRouteTypes {
     | '/documents'
     | '/email-sync'
     | '/inbox'
-    | '/leads'
     | '/pipeline'
     | '/reports'
     | '/roles'
@@ -230,7 +219,6 @@ export interface FileRouteTypes {
     | '/_app/documents'
     | '/_app/email-sync'
     | '/_app/inbox'
-    | '/_app/leads'
     | '/_app/pipeline'
     | '/_app/reports'
     | '/_app/roles'
@@ -310,13 +298,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPipelineRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/leads': {
-      id: '/_app/leads'
-      path: '/leads'
-      fullPath: '/leads'
-      preLoaderRoute: typeof AppLeadsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/inbox': {
       id: '/_app/inbox'
       path: '/inbox'
@@ -385,7 +366,6 @@ interface AppRouteChildren {
   AppDocumentsRoute: typeof AppDocumentsRoute
   AppEmailSyncRoute: typeof AppEmailSyncRoute
   AppInboxRoute: typeof AppInboxRoute
-  AppLeadsRoute: typeof AppLeadsRoute
   AppPipelineRoute: typeof AppPipelineRoute
   AppReportsRoute: typeof AppReportsRoute
   AppRolesRoute: typeof AppRolesRoute
@@ -402,7 +382,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppDocumentsRoute: AppDocumentsRoute,
   AppEmailSyncRoute: AppEmailSyncRoute,
   AppInboxRoute: AppInboxRoute,
-  AppLeadsRoute: AppLeadsRoute,
   AppPipelineRoute: AppPipelineRoute,
   AppReportsRoute: AppReportsRoute,
   AppRolesRoute: AppRolesRoute,

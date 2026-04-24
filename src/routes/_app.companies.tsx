@@ -62,8 +62,12 @@ function CompaniesPage() {
       name,
       industry: String(form.get("industry") || "").trim() || null,
       website: String(form.get("website") || "").trim() || null,
+      contact_person: String(form.get("contact_person") || "").trim() || null,
+      email: String(form.get("email") || "").trim() || null,
+      phone: String(form.get("phone") || "").trim() || null,
+      address: String(form.get("address") || "").trim() || null,
       owner_id: user!.id,
-    });
+    } as any);
     if (error) { toast.error(error.message); return; }
     toast.success("Company added");
     setOpenAdd(false);
@@ -77,7 +81,11 @@ function CompaniesPage() {
       name,
       industry: String(form.get("industry") || "").trim() || null,
       website: String(form.get("website") || "").trim() || null,
-    }).eq("id", id);
+      contact_person: String(form.get("contact_person") || "").trim() || null,
+      email: String(form.get("email") || "").trim() || null,
+      phone: String(form.get("phone") || "").trim() || null,
+      address: String(form.get("address") || "").trim() || null,
+    } as any).eq("id", id);
     if (error) { toast.error(error.message); return; }
     toast.success("Company updated");
     setEditing(null);
@@ -206,6 +214,13 @@ function CompaniesPage() {
               <Field label="Company name" name="name" required defaultValue={editing.name} />
               <Field label="Industry" name="industry" defaultValue={editing.industry ?? ""} />
               <Field label="Website" name="website" defaultValue={editing.website ?? ""} />
+              <Field label="Contact person" name="contact_person" defaultValue={editing.contact_person ?? ""} />
+              <Field label="Email address" name="email" type="email" defaultValue={editing.email ?? ""} />
+              <Field label="Phone" name="phone" defaultValue={editing.phone ?? ""} />
+              <div>
+                <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>Company address</label>
+                <textarea name="address" rows={2} defaultValue={editing.address ?? ""} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
+              </div>
               <button type="submit" className="w-full rounded-full bg-primary px-4 py-2.5 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
                 Save changes
               </button>
@@ -226,6 +241,13 @@ function CompaniesPage() {
               <Field label="Company name" name="name" required />
               <Field label="Industry" name="industry" />
               <Field label="Website" name="website" />
+              <Field label="Contact person" name="contact_person" />
+              <Field label="Email address" name="email" type="email" />
+              <Field label="Phone" name="phone" />
+              <div>
+                <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>Company address</label>
+                <textarea name="address" rows={2} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
+              </div>
               <button type="submit" className="w-full rounded-full bg-primary px-4 py-2.5 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
                 Save company
               </button>
@@ -254,11 +276,11 @@ function Stat({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function Field({ label, name, required = false, defaultValue }: { label: string; name: string; required?: boolean; defaultValue?: string }) {
+function Field({ label, name, required = false, defaultValue, type = "text" }: { label: string; name: string; required?: boolean; defaultValue?: string; type?: string }) {
   return (
     <div>
       <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>{label}{required && <span className="text-destructive"> *</span>}</label>
-      <input name={name} required={required} defaultValue={defaultValue} maxLength={255} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
+      <input name={name} type={type} required={required} defaultValue={defaultValue} maxLength={255} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
     </div>
   );
 }

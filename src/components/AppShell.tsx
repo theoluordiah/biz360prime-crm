@@ -12,7 +12,6 @@ import {
   Search,
   LogOut,
   CalendarCheck,
-  UserPlus,
   Inbox,
   FileText,
 } from "lucide-react";
@@ -24,7 +23,6 @@ import { NotificationsBell } from "@/components/NotificationsBell";
 // Each module gets its own warm hue (bg + fg) used on hover and when active
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, bg: "#ffe4d1", fg: "#c95c47" }, // peach
-  { to: "/leads", label: "Leads", icon: UserPlus, bg: "#fde2c0", fg: "#a8631c" }, // amber
   { to: "/contacts", label: "Contacts", icon: Users, bg: "#fce5d8", fg: "#b04a2a" }, // terracotta
   { to: "/companies", label: "Companies", icon: Building2, bg: "#fde7d4", fg: "#a85a2c" }, // pumpkin
   { to: "/pipeline", label: "Pipeline", icon: KanbanSquare, bg: "#fde0e0", fg: "#b8413f" }, // coral red

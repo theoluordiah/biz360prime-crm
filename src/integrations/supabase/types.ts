@@ -94,32 +94,44 @@ export type Database = {
       }
       companies: {
         Row: {
+          address: string | null
+          contact_person: string | null
           created_at: string
+          email: string | null
           id: string
           industry: string | null
           name: string
           notes: string | null
           owner_id: string | null
+          phone: string | null
           updated_at: string
           website: string | null
         }
         Insert: {
+          address?: string | null
+          contact_person?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           industry?: string | null
           name: string
           notes?: string | null
           owner_id?: string | null
+          phone?: string | null
           updated_at?: string
           website?: string | null
         }
         Update: {
+          address?: string | null
+          contact_person?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           industry?: string | null
           name?: string
           notes?: string | null
           owner_id?: string | null
+          phone?: string | null
           updated_at?: string
           website?: string | null
         }

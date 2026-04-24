@@ -57,19 +57,16 @@ function InboxPage() {
     qc.invalidateQueries({ queryKey: ["inbox-unread"] });
   };
 
-  const convertToLead = async (m: any) => {
-    const { error } = await supabase.from("leads").insert({
+  const convertToContact = async (m: any) => {
+    const { error } = await supabase.from("contacts").insert({
       first_name: m.sender_name?.split(" ")[0] ?? m.sender_handle ?? "Unknown",
-      last_name: m.sender_name?.split(" ").slice(1).join(" ") || null,
+      last_name: m.sender_name?.split(" ").slice(1).join(" ") || "—",
       email: m.channel === "email" ? m.sender_handle : null,
       phone: ["whatsapp", "sms"].includes(m.channel) ? m.sender_handle : null,
-      source: m.channel,
-      channel: m.channel,
-      message: m.body,
       owner_id: user!.id,
     });
     if (error) { toast.error(error.message); return; }
-    toast.success("Created lead");
+    toast.success("Created contact");
   };
 
   return (
@@ -142,12 +139,12 @@ function InboxPage() {
                       </div>
                       {canEdit(role) && (
                         <button
-                          onClick={(e) => { e.stopPropagation(); convertToLead(m); }}
+                          onClick={(e) => { e.stopPropagation(); convertToContact(m); }}
                           className="text-[10px] inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-1 text-foreground hover:bg-secondary-hover shrink-0"
                           style={{ fontWeight: 500 }}
-                          title="Convert to lead"
+                          title="Convert to contact"
                         >
-                          Lead <ArrowRight className="h-3 w-3" />
+                          Contact <ArrowRight className="h-3 w-3" />
                         </button>
                       )}
                     </div>
