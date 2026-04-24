@@ -337,3 +337,29 @@ function Field({ label, name, required = false, defaultValue, type = "text" }: {
     </div>
   );
 }
+
+function DetailRow({ icon: Icon, label, value, isEmail, isPhone, isLink }: { icon: any; label: string; value?: string | null; isEmail?: boolean; isPhone?: boolean; isLink?: boolean }) {
+  const display = value && String(value).trim() ? String(value) : "—";
+  const hasValue = display !== "—";
+  let href: string | undefined;
+  if (hasValue) {
+    if (isEmail) href = `mailto:${display}`;
+    else if (isPhone) href = `tel:${display}`;
+    else if (isLink) href = display.startsWith("http") ? display : `https://${display}`;
+  }
+  return (
+    <div className="flex items-start gap-3">
+      <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0">
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-xs text-muted-foreground">{label}</div>
+        {href ? (
+          <a href={href} target={isLink ? "_blank" : undefined} rel="noreferrer" className="text-sm text-foreground hover:text-primary break-words" style={{ fontWeight: 500 }}>{display}</a>
+        ) : (
+          <div className="text-sm text-foreground break-words" style={{ fontWeight: 500 }}>{display}</div>
+        )}
+      </div>
+    </div>
+  );
+}
