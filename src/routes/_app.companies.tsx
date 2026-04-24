@@ -180,18 +180,21 @@ function CompaniesPage() {
                   <div className="text-base text-foreground truncate" style={{ fontWeight: 500 }}>{c.name}</div>
                   <div className="text-xs text-muted-foreground truncate">{c.industry || c.website || "—"}</div>
                 </div>
-                {canEdit(role) && (
-                  <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-1 shrink-0">
+                  <button onClick={() => setViewing(c)} title="View" className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground">
+                    <Eye className="h-4 w-4" />
+                  </button>
+                  {canEdit(role) && (
                     <button onClick={() => setEditing(c)} title="Edit" className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground">
                       <Pencil className="h-4 w-4" />
                     </button>
-                    {canDelete && (
-                      <button onClick={() => deleteCompany(c.id)} title="Delete" className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                )}
+                  )}
+                  {canEdit(role) && canDelete && (
+                    <button onClick={() => deleteCompany(c.id)} title="Delete" className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-border">
                 <Stat label="Contacts" value={c.contact_count} />
