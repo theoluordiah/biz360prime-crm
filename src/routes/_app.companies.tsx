@@ -42,7 +42,9 @@ function CompaniesPage() {
     queryFn: async () => {
       const { data: comps } = await supabase.from("companies").select("*").order("name");
       const { data: contacts } = await supabase.from("contacts").select("id, company_id");
-      const { data: deals } = await supabase.from("deals").select("id, value, company_id");
+      const { data: deals } = await supabase.from("deals").select("id, value, company_id, stage_id");
+      const { data: stages } = await supabase.from("pipeline_stages").select("id, is_won");
+      const wonStageIds = new Set((stages ?? []).filter((s: any) => s.is_won).map((s: any) => s.id));
       return (comps ?? []).map((c: any) => {
         const myContacts = (contacts ?? []).filter((x: any) => x.company_id === c.id);
         const myDeals = (deals ?? []).filter((x: any) => x.company_id === c.id);
@@ -51,6 +53,9 @@ function CompaniesPage() {
           contact_count: myContacts.length,
           deal_count: myDeals.length,
           revenue: myDeals.reduce((s: number, d: any) => s + Number(d.value || 0), 0),
+          won_revenue: myDeals
+            .filter((d: any) => wonStageIds.has(d.stage_id))
+            .reduce((s: number, d: any) => s + Number(d.value || 0), 0),
         };
       });
     },
@@ -109,7 +114,8 @@ function CompaniesPage() {
       notes: c.notes ?? "",
       contact_count: c.contact_count,
       deal_count: c.deal_count,
-      revenue: c.revenue,
+      pipeline_value: c.revenue,
+      won_revenue: c.won_revenue,
       created_at: c.created_at,
     }));
     if (!rows.length) { toast.error("Nothing to export"); return; }
@@ -196,10 +202,11 @@ function CompaniesPage() {
                   )}
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-border">
+              <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-border">
                 <Stat label="Contacts" value={c.contact_count} />
                 <Stat label="Deals" value={c.deal_count} />
-                <Stat label="Revenue" value={formatCurrency(c.revenue)} />
+                <Stat label="Pipeline" value={formatCurrency(c.revenue)} />
+                <Stat label="Won revenue" value={formatCurrency(c.won_revenue)} />
               </div>
             </div>
           ))}
@@ -231,10 +238,11 @@ function CompaniesPage() {
               <DetailRow icon={Globe} label="Website" value={viewing.website} isLink />
               <DetailRow icon={Building2} label="Industry" value={viewing.industry} />
             </div>
-            <div className="grid grid-cols-3 gap-2 mt-5 pt-5 border-t border-border">
+            <div className="grid grid-cols-2 gap-2 mt-5 pt-5 border-t border-border">
               <Stat label="Contacts" value={viewing.contact_count} />
               <Stat label="Deals" value={viewing.deal_count} />
-              <Stat label="Revenue" value={formatCurrency(viewing.revenue)} />
+              <Stat label="Pipeline value" value={formatCurrency(viewing.revenue)} />
+              <Stat label="Won revenue" value={formatCurrency(viewing.won_revenue)} />
             </div>
             {viewing.notes && (
               <div className="mt-5 pt-5 border-t border-border">
