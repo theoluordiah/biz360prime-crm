@@ -318,23 +318,43 @@ function DroppableColumn({
   );
 }
 
-function DealCard({ deal }: { deal: any }) {
+function DealCard({ deal, canManage, onEdit, onDelete }: { deal: any; canManage: boolean; onEdit: () => void; onDelete: () => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: deal.id });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
   return (
     <div
       ref={setNodeRef}
-      {...attributes}
-      {...listeners}
       style={style}
-      className={`bg-muted/50 border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing ${isDragging ? "opacity-60" : ""}`}
+      className={`bg-muted/50 border border-border rounded-lg p-3 ${isDragging ? "opacity-60" : ""}`}
     >
-      <div className="text-sm text-foreground truncate" style={{ fontWeight: 500 }}>{deal.title}</div>
-      <div className="text-xs text-muted-foreground truncate mt-0.5">{deal.companies?.name ?? "—"}</div>
-      <div className="flex items-center justify-between mt-2">
-        <span className="text-xs text-foreground" style={{ fontWeight: 500 }}>{formatCurrency(Number(deal.value || 0))}</span>
-        {deal.industry && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/40 text-foreground">{deal.industry}</span>}
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+        <div className="text-sm text-foreground truncate" style={{ fontWeight: 500 }}>{deal.title}</div>
+        <div className="text-xs text-muted-foreground truncate mt-0.5">{deal.companies?.name ?? "—"}</div>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-xs text-foreground" style={{ fontWeight: 500 }}>{formatCurrency(Number(deal.value || 0))}</span>
+          {deal.industry && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/40 text-foreground">{deal.industry}</span>}
+        </div>
       </div>
+      {canManage && (
+        <div className="flex justify-end gap-1 mt-2 pt-2 border-t border-border">
+          <button
+            onClick={onEdit}
+            onPointerDown={(e) => e.stopPropagation()}
+            title="Edit deal"
+            className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={onDelete}
+            onPointerDown={(e) => e.stopPropagation()}
+            title="Delete deal"
+            className="p-1 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
