@@ -382,22 +382,24 @@ function DealCard({ deal, canManage, onEdit, onDelete }: { deal: any; canManage:
         </div>
       </div>
       {canManage && (
-        <div className="flex justify-end gap-1 mt-2 pt-2 border-t border-border">
+        <div className="flex justify-end gap-2 mt-3 pt-2 border-t border-border">
           <button
             onClick={onEdit}
             onPointerDown={(e) => e.stopPropagation()}
             title="Edit deal"
-            className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground"
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-secondary/40 hover:bg-secondary text-foreground text-[11px]"
+            style={{ fontWeight: 500 }}
           >
-            <Pencil className="h-3.5 w-3.5" />
+            <Pencil className="h-3 w-3" /> Edit
           </button>
           <button
             onClick={onDelete}
             onPointerDown={(e) => e.stopPropagation()}
             title="Delete deal"
-            className="p-1 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-destructive/10 hover:bg-destructive hover:text-destructive-foreground text-destructive text-[11px]"
+            style={{ fontWeight: 500 }}
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 className="h-3 w-3" /> Delete
           </button>
         </div>
       )}
