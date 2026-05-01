@@ -25,6 +25,8 @@ function PipelinePage() {
   const { user, role } = useAuth();
   const qc = useQueryClient();
   const [openAdd, setOpenAdd] = useState(false);
+  const [editDeal, setEditDeal] = useState<any | null>(null);
+  const canManageDeals = canManage(role);
 
   const stages = useQuery({
     queryKey: ["stages"],
