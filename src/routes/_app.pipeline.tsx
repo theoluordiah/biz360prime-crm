@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth, canEdit } from "@/lib/auth-context";
+import { useAuth, canEdit, canManage } from "@/lib/auth-context";
 import { formatCurrency, initials } from "@/lib/format";
-import { Plus, X, Users, Check } from "lucide-react";
+import { Plus, X, Users, Check, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   DndContext,
