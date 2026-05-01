@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth, canEdit } from "@/lib/auth-context";
+import { useAuth, canEdit, canManage } from "@/lib/auth-context";
 import { formatCurrency, initials } from "@/lib/format";
-import { Plus, X, Users, Check } from "lucide-react";
+import { Plus, X, Users, Check, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   DndContext,
@@ -25,6 +25,8 @@ function PipelinePage() {
   const { user, role } = useAuth();
   const qc = useQueryClient();
   const [openAdd, setOpenAdd] = useState(false);
+  const [editDeal, setEditDeal] = useState<any | null>(null);
+  const canManageDeals = canManage(role);
 
   const stages = useQuery({
     queryKey: ["stages"],
@@ -168,7 +170,21 @@ function PipelinePage() {
                   qc.invalidateQueries({ queryKey: ["stage-assignees"] });
                 }}
               >
-                {stageDeals.map((d) => <DealCard key={d.id} deal={d} />)}
+                {stageDeals.map((d) => (
+                  <DealCard
+                    key={d.id}
+                    deal={d}
+                    canManage={canManageDeals}
+                    onEdit={() => setEditDeal(d)}
+                    onDelete={async () => {
+                      if (!confirm(`Delete deal "${d.title}"?`)) return;
+                      const { error } = await supabase.from("deals").delete().eq("id", d.id);
+                      if (error) { toast.error(error.message); return; }
+                      toast.success("Deal deleted");
+                      qc.invalidateQueries({ queryKey: ["deals"] });
+                    }}
+                  />
+                ))}
               </DroppableColumn>
             );
           })}
@@ -196,6 +212,52 @@ function PipelinePage() {
               </div>
               <button type="submit" className="w-full rounded-full bg-primary px-4 py-2.5 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
                 Save deal
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {editDeal && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="flex-1 bg-foreground/20" onClick={() => setEditDeal(null)} />
+          <div className="w-full max-w-md bg-card h-full overflow-y-auto p-6 border-l border-border">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg text-foreground" style={{ fontWeight: 500 }}>Edit deal</h2>
+              <button onClick={() => setEditDeal(null)}><X className="h-5 w-5 text-muted-foreground" /></button>
+            </div>
+            <form
+              onSubmit={async (e: FormEvent<HTMLFormElement>) => {
+                e.preventDefault();
+                const form = new FormData(e.currentTarget);
+                const title = String(form.get("title") || "").trim();
+                if (!title) { toast.error("Title required"); return; }
+                const { error } = await supabase.from("deals").update({
+                  title,
+                  value: Number(form.get("value") || 0),
+                  source: String(form.get("source") || "").trim() || null,
+                  industry: String(form.get("industry") || "").trim() || null,
+                  stage_id: String(form.get("stage_id") || "") || editDeal.stage_id,
+                }).eq("id", editDeal.id);
+                if (error) { toast.error(error.message); return; }
+                toast.success("Deal updated");
+                setEditDeal(null);
+                qc.invalidateQueries({ queryKey: ["deals"] });
+              }}
+              className="space-y-3"
+            >
+              <Field label="Title" name="title" required defaultValue={editDeal.title ?? ""} />
+              <Field label="Value" name="value" type="number" defaultValue={String(editDeal.value ?? 0)} />
+              <Field label="Source" name="source" defaultValue={editDeal.source ?? ""} />
+              <Field label="Industry" name="industry" defaultValue={editDeal.industry ?? ""} />
+              <div>
+                <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>Stage</label>
+                <select name="stage_id" defaultValue={editDeal.stage_id ?? ""} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary">
+                  {(stages.data ?? []).map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+              </div>
+              <button type="submit" className="w-full rounded-full bg-primary px-4 py-2.5 text-sm text-primary-foreground hover:bg-primary-hover" style={{ fontWeight: 500 }}>
+                Save changes
               </button>
             </form>
           </div>
@@ -302,32 +364,52 @@ function DroppableColumn({
   );
 }
 
-function DealCard({ deal }: { deal: any }) {
+function DealCard({ deal, canManage, onEdit, onDelete }: { deal: any; canManage: boolean; onEdit: () => void; onDelete: () => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: deal.id });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
   return (
     <div
       ref={setNodeRef}
-      {...attributes}
-      {...listeners}
       style={style}
-      className={`bg-muted/50 border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing ${isDragging ? "opacity-60" : ""}`}
+      className={`bg-muted/50 border border-border rounded-lg p-3 ${isDragging ? "opacity-60" : ""}`}
     >
-      <div className="text-sm text-foreground truncate" style={{ fontWeight: 500 }}>{deal.title}</div>
-      <div className="text-xs text-muted-foreground truncate mt-0.5">{deal.companies?.name ?? "—"}</div>
-      <div className="flex items-center justify-between mt-2">
-        <span className="text-xs text-foreground" style={{ fontWeight: 500 }}>{formatCurrency(Number(deal.value || 0))}</span>
-        {deal.industry && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/40 text-foreground">{deal.industry}</span>}
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+        <div className="text-sm text-foreground truncate" style={{ fontWeight: 500 }}>{deal.title}</div>
+        <div className="text-xs text-muted-foreground truncate mt-0.5">{deal.companies?.name ?? "—"}</div>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-xs text-foreground" style={{ fontWeight: 500 }}>{formatCurrency(Number(deal.value || 0))}</span>
+          {deal.industry && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/40 text-foreground">{deal.industry}</span>}
+        </div>
       </div>
+      {canManage && (
+        <div className="flex justify-end gap-1 mt-2 pt-2 border-t border-border">
+          <button
+            onClick={onEdit}
+            onPointerDown={(e) => e.stopPropagation()}
+            title="Edit deal"
+            className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={onDelete}
+            onPointerDown={(e) => e.stopPropagation()}
+            title="Delete deal"
+            className="p-1 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-function Field({ label, name, type = "text", required = false, placeholder }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string }) {
+function Field({ label, name, type = "text", required = false, placeholder, defaultValue }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string; defaultValue?: string }) {
   return (
     <div>
       <label className="block text-sm mb-1.5 text-foreground" style={{ fontWeight: 500 }}>{label}{required && <span className="text-destructive"> *</span>}</label>
-      <input name={name} type={type} required={required} placeholder={placeholder} maxLength={255} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
+      <input name={name} type={type} required={required} placeholder={placeholder} defaultValue={defaultValue} maxLength={255} className="w-full rounded-lg border border-input bg-input-bg px-3 py-2 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
     </div>
   );
 }
