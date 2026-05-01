@@ -170,7 +170,21 @@ function PipelinePage() {
                   qc.invalidateQueries({ queryKey: ["stage-assignees"] });
                 }}
               >
-                {stageDeals.map((d) => <DealCard key={d.id} deal={d} />)}
+                {stageDeals.map((d) => (
+                  <DealCard
+                    key={d.id}
+                    deal={d}
+                    canManage={canManageDeals}
+                    onEdit={() => setEditDeal(d)}
+                    onDelete={async () => {
+                      if (!confirm(`Delete deal "${d.title}"?`)) return;
+                      const { error } = await supabase.from("deals").delete().eq("id", d.id);
+                      if (error) { toast.error(error.message); return; }
+                      toast.success("Deal deleted");
+                      qc.invalidateQueries({ queryKey: ["deals"] });
+                    }}
+                  />
+                ))}
               </DroppableColumn>
             );
           })}
