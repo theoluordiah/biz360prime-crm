@@ -238,10 +238,11 @@ function CompaniesPage() {
               <DetailRow icon={Globe} label="Website" value={viewing.website} isLink />
               <DetailRow icon={Building2} label="Industry" value={viewing.industry} />
             </div>
-            <div className="grid grid-cols-3 gap-2 mt-5 pt-5 border-t border-border">
+            <div className="grid grid-cols-2 gap-2 mt-5 pt-5 border-t border-border">
               <Stat label="Contacts" value={viewing.contact_count} />
               <Stat label="Deals" value={viewing.deal_count} />
-              <Stat label="Revenue" value={formatCurrency(viewing.revenue)} />
+              <Stat label="Pipeline value" value={formatCurrency(viewing.revenue)} />
+              <Stat label="Won revenue" value={formatCurrency(viewing.won_revenue)} />
             </div>
             {viewing.notes && (
               <div className="mt-5 pt-5 border-t border-border">
