@@ -114,7 +114,8 @@ function CompaniesPage() {
       notes: c.notes ?? "",
       contact_count: c.contact_count,
       deal_count: c.deal_count,
-      revenue: c.revenue,
+      pipeline_value: c.revenue,
+      won_revenue: c.won_revenue,
       created_at: c.created_at,
     }));
     if (!rows.length) { toast.error("Nothing to export"); return; }
