@@ -204,8 +204,6 @@ function CompaniesPage() {
               </div>
               <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-border">
                 <Stat label="Contacts" value={c.contact_count} />
-                <Stat label="Deals" value={c.deal_count} />
-                <Stat label="Pipeline" value={formatCurrency(c.revenue)} />
                 <Stat label="Won revenue" value={formatCurrency(c.won_revenue)} />
               </div>
             </div>
