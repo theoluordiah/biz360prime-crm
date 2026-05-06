@@ -225,11 +225,7 @@ function AuthPage() {
 
       {/* Right: visual panel */}
       <div
-        className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center p-10"
-        style={{
-          background:
-            "linear-gradient(135deg, #fff6ec 0%, #ffe4d1 45%, #f5b7a3 100%)",
-        }}
+        className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center p-10 bg-white"
       >
         {/* Decorative blobs */}
         <div
