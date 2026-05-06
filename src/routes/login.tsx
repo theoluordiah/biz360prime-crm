@@ -225,8 +225,7 @@ function AuthPage() {
 
       {/* Right: visual panel */}
       <div
-        className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center p-10"
-        style={{ background: "linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)" }}
+        className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center p-10 bg-white"
       >
         {/* Decorative blobs */}
         <div
@@ -244,11 +243,11 @@ function AuthPage() {
           <div className="text-center mb-8">
             <h2
               className="text-3xl leading-tight"
-              style={{ color: "#ffffff", fontWeight: 500 }}
+              style={{ color: "#3a2418", fontWeight: 500 }}
             >
               Run sales, support &amp; ops from one warm, calm space.
             </h2>
-            <p className="mt-3 text-sm" style={{ color: "rgba(255,255,255,0.85)" }}>
+            <p className="mt-3 text-sm" style={{ color: "#8a6a55" }}>
               Pipeline, contacts, AI email writer and reports — beautifully integrated.
             </p>
           </div>
