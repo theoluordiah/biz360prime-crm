@@ -243,11 +243,11 @@ function AuthPage() {
           <div className="text-center mb-8">
             <h2
               className="text-3xl leading-tight"
-              style={{ color: "#ffffff", fontWeight: 500 }}
+              style={{ color: "#3a2418", fontWeight: 500 }}
             >
               Run sales, support &amp; ops from one warm, calm space.
             </h2>
-            <p className="mt-3 text-sm" style={{ color: "rgba(255,255,255,0.85)" }}>
+            <p className="mt-3 text-sm" style={{ color: "#8a6a55" }}>
               Pipeline, contacts, AI email writer and reports — beautifully integrated.
             </p>
           </div>
