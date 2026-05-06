@@ -225,16 +225,17 @@ function AuthPage() {
 
       {/* Right: visual panel */}
       <div
-        className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center p-10 bg-white"
+        className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center p-10"
+        style={{ background: "linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)" }}
       >
         {/* Decorative blobs */}
         <div
           className="absolute -top-24 -left-20 w-96 h-96 rounded-full opacity-40"
-          style={{ background: "radial-gradient(circle at 30% 30%, #e2725b, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle at 30% 30%, #ffffff, transparent 70%)" }}
           aria-hidden
         />
         <div
-          className="absolute -bottom-32 -right-16 w-[28rem] h-[28rem] rounded-full opacity-50"
+          className="absolute -bottom-32 -right-16 w-[28rem] h-[28rem] rounded-full opacity-30"
           style={{ background: "radial-gradient(circle at 60% 40%, #ffffff, transparent 70%)" }}
           aria-hidden
         />
@@ -243,11 +244,11 @@ function AuthPage() {
           <div className="text-center mb-8">
             <h2
               className="text-3xl leading-tight"
-              style={{ color: "#3a2418", fontWeight: 500 }}
+              style={{ color: "#ffffff", fontWeight: 500 }}
             >
               Run sales, support &amp; ops from one warm, calm space.
             </h2>
-            <p className="mt-3 text-sm" style={{ color: "#8a6a55" }}>
+            <p className="mt-3 text-sm" style={{ color: "rgba(255,255,255,0.85)" }}>
               Pipeline, contacts, AI email writer and reports — beautifully integrated.
             </p>
           </div>
