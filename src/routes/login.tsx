@@ -235,7 +235,7 @@ function AuthPage() {
         />
         <div
           className="absolute -bottom-32 -right-16 w-[28rem] h-[28rem] rounded-full opacity-50"
-          style={{ background: "radial-gradient(circle at 60% 40%, #f5b7a3, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle at 60% 40%, #ffffff, transparent 70%)" }}
           aria-hidden
         />
 
